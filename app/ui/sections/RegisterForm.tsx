@@ -32,7 +32,9 @@ export function RegisterForm(props: PaperProps) {
   const router=useRouter();
 
   function validate_inputs(){
-    
+    if(password!==confirm_password){
+      setFormError('Passwords do not match')
+    }
   }
 
   async function handleRegister() {

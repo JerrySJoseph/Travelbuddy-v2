@@ -17,6 +17,8 @@ export const createNewUser=functions.https.onCall(async(data,context)=>{
             photoURL: 'https://d11b3pf7ulbs6a.cloudfront.net/static/img/panda.png',
             disabled:false
         })
+
+        
         const userProfile:UserProfile={
             id: userRecord.uid,
             firstname,
