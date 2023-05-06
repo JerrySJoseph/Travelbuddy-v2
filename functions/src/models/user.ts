@@ -26,12 +26,30 @@ export interface Destination{
     reviews:UserReview[]
 }
 
+export interface DestinationOverride{
+    id?:string,
+    name?:string,
+    city?:string,
+    country?:string,
+    attractions?:string[],
+    reviews?:UserReview[]
+}
+
 export interface UserReview{
+    id:string
     owner:UserProfile,
     rating:number,
     comment:string,
     verified:Boolean,
     datetime:number
+}
+export interface UserReviewOverride{
+    id?:string
+    owner?:UserProfile,
+    rating?:number,
+    comment?:string,
+    verified?:Boolean,
+    datetime?:number
 }
 
 export interface TravelGroup{
@@ -46,4 +64,19 @@ export interface TravelGroup{
         flexibility:number
     },
     summary:string
+}
+
+
+export interface TravelGroupOverride{
+    id?:string,
+    name?:string,
+    createdBy?:UserProfile,
+    slots?:number,
+    members?:UserProfile[],
+    travellingDateRange?:{
+        start?:number,
+        end?:number,
+        flexibility?:number
+    },
+    summary?:string
 }
