@@ -6,6 +6,7 @@ export interface UserProfile{
     bio:string,
     avatar:string,
     travelPlans:TravelPlan[],
+    username:string
     [key:string]:any
 }
 
@@ -17,6 +18,18 @@ export interface UserProfileOverride{
     bio?:string,
     avatar?:string,
     travelPlans?:TravelPlan[]
+}
+
+export interface Likes{
+    id:string,
+    owner:UserProfile,
+    datetime:any
+}
+
+export interface Dislikes{
+    id:string,
+    owner:UserProfile,
+    datetime:any
 }
 
 export interface Destination{
@@ -45,6 +58,7 @@ export interface UserReview{
     verified:Boolean,
     datetime:any
 }
+
 export interface UserReviewOverride{
     id?:string
     owner?:UserProfile,
@@ -87,4 +101,5 @@ export interface TravelPlan{
     id:string,
     destinations:Destination[]
     group:TravelGroup,
+    isPrivate:Boolean
 }

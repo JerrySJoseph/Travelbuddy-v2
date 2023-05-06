@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { Autocomplete, Button, Menu, useMantineTheme, Text } from "@mantine/core"
-import { IconBook, IconCalendar, IconChevronDown, IconPackage, IconPower, IconSearch, IconSquareCheck, IconUser, IconUsers } from "@tabler/icons"
+import { IconBook, IconCalendar, IconCar, IconChevronDown, IconPackage, IconPower, IconSearch, IconSquareCheck, IconUser, IconUsers } from "@tabler/icons"
 import { useAuth } from "data/hooks/useAuth"
 
 
@@ -43,15 +43,21 @@ export function UserControlMenu() {
         >
             <Menu.Target>
                 <div className="dropdown-toggle cursor-pointer" role="button">
-                    <img src={user?.photoURL} alt="" className="avatar-sm" />
+                    <img src={user?.photoURL || ''} alt="" className="avatar-sm" />
                 </div>
             </Menu.Target>
             <Menu.Dropdown>
                 <Menu.Item
+                   
                     icon={<IconUser size="1rem" color={theme.colors.blue[6]} stroke={1.5} />}
-                    
                 >
                     My Profile
+                </Menu.Item>
+                <Menu.Item
+                    icon={<IconCar size="1rem" color={theme.colors.pink[6]} stroke={1.5} />}
+                   
+                >
+                    My Travel Plans
                 </Menu.Item>
                 <Menu.Item
                     icon={<IconBook size="1rem" color={theme.colors.pink[6]} stroke={1.5} />}

@@ -17,12 +17,12 @@ export default function App(props: AppProps) {
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
-  useEffect(() => {
-    if (window.location.hostname == 'localhost') {
-      connectFunctionsEmulator(getFunctions(app), 'localhost', 5001)
-      connectAuthEmulator(getAuth(app), "http://localhost:9099");
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (window.location.hostname == 'localhost') {
+  //     connectFunctionsEmulator(getFunctions(app), 'localhost', 5001)
+  //     connectAuthEmulator(getAuth(app), "http://localhost:9099");
+  //   }
+  // }, [])
 
   return (
     <>

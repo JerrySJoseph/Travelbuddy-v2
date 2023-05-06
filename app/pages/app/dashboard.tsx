@@ -3,6 +3,7 @@ import { useAuth } from 'data/hooks/useAuth'
 import { getAuth, signOut } from 'firebase/auth'
 import React, { useState } from 'react'
 import Applayout from 'ui/Layout/AppLayout/Applayout';
+import { CreateTravelPlanForm } from 'ui/sections/CreateTravelPlanForm';
 
 
 const Dashboard = () => {
@@ -15,8 +16,8 @@ const Dashboard = () => {
           <h3 className="h3">Travel Plans</h3>
           <Button variant='outline' onClick={()=>{setOpen(!open)}}>Crate new Travel plan</Button>
         </div>
-        <Modal opened={open} onClose={()=>{setOpen(false)}} title="Authentication" centered>
-        
+        <Modal opened={open} onClose={()=>{setOpen(false)}} centered size='xl'>
+        <CreateTravelPlanForm/>
       </Modal>
       </div>
     </Applayout>
