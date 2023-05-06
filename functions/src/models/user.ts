@@ -80,3 +80,9 @@ export interface TravelGroupOverride{
     },
     summary?:string
 }
+
+export interface TravelPlan{
+    id:string,
+    destinations:Destination
+    group:TravelGroup,
+}

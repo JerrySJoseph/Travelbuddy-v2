@@ -13,7 +13,7 @@ const Applayout = ({ children, ...props }: AppLayoutProps) => {
     return (
         <>
             <TopNavbar />
-            <main className='container' {...props}>
+            <main className='container pt-4' {...props}>
                 {children}
             </main>
         </>
