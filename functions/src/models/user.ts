@@ -23,6 +23,15 @@ export interface Destination{
     city:string,
     country:string,
     attractions:string[],
+    reviews:UserReview[]
+}
+
+export interface UserReview{
+    owner:UserProfile,
+    rating:number,
+    comment:string,
+    verified:Boolean,
+    datetime:number
 }
 
 export interface TravelGroup{
