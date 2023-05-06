@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { Autocomplete, Button, Menu, useMantineTheme, Text } from "@mantine/core"
-import { IconCalendar, IconChevronDown, IconPackage, IconSearch, IconSquareCheck, IconUsers } from "@tabler/icons"
+import { IconBook, IconCalendar, IconChevronDown, IconPackage, IconPower, IconSearch, IconSquareCheck, IconUser, IconUsers } from "@tabler/icons"
 import { useAuth } from "data/hooks/useAuth"
 
 
@@ -8,9 +8,8 @@ const TopNavbar = () => {
 
     const { user } = useAuth()
 
-
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
             <div className="container">
                 <div className="col-lg-2">
                     <a className="navbar-brand" href="#">Travel Buddy</a>
@@ -35,7 +34,7 @@ export default TopNavbar
 
 export function UserControlMenu() {
     const theme = useMantineTheme();
-    const { user } = useAuth()
+    const { user ,logout} = useAuth()
     return (
         <Menu
             position="top-end"
@@ -49,44 +48,23 @@ export function UserControlMenu() {
             </Menu.Target>
             <Menu.Dropdown>
                 <Menu.Item
-                    icon={<IconPackage size="1rem" color={theme.colors.blue[6]} stroke={1.5} />}
-                    rightSection={
-                        <Text size="xs" transform="uppercase" weight={700} color="dimmed">
-                            Ctrl + P
-                        </Text>
-                    }
+                    icon={<IconUser size="1rem" color={theme.colors.blue[6]} stroke={1.5} />}
+                    
                 >
-                    Project
+                    My Profile
                 </Menu.Item>
                 <Menu.Item
-                    icon={<IconSquareCheck size="1rem" color={theme.colors.pink[6]} stroke={1.5} />}
-                    rightSection={
-                        <Text size="xs" transform="uppercase" weight={700} color="dimmed">
-                            Ctrl + T
-                        </Text>
-                    }
+                    icon={<IconBook size="1rem" color={theme.colors.pink[6]} stroke={1.5} />}
+                   
                 >
-                    Task
+                    My Bookings
                 </Menu.Item>
+                
                 <Menu.Item
-                    icon={<IconUsers size="1rem" color={theme.colors.cyan[6]} stroke={1.5} />}
-                    rightSection={
-                        <Text size="xs" transform="uppercase" weight={700} color="dimmed">
-                            Ctrl + U
-                        </Text>
-                    }
+                    icon={<IconPower size="1rem" color={theme.colors.red[6]} stroke={1.5} />}
+                    onClick={logout}
                 >
-                    Team
-                </Menu.Item>
-                <Menu.Item
-                    icon={<IconCalendar size="1rem" color={theme.colors.violet[6]} stroke={1.5} />}
-                    rightSection={
-                        <Text size="xs" transform="uppercase" weight={700} color="dimmed">
-                            Ctrl + E
-                        </Text>
-                    }
-                >
-                    Event
+                    Logout
                 </Menu.Item>
             </Menu.Dropdown>
         </Menu>)
