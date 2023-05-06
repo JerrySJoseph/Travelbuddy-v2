@@ -19,27 +19,27 @@ export function CreateTravelPlanForm(props: PaperProps) {
 
     const [destinationsList, setDestinationsList] = useState<string[]>([])
     const [destinations, setDestinations] = useState<string[]>([])
-    const [users,setUsers]=useState<UserProfile[]>([])
+    const [users, setUsers] = useState<UserProfile[]>([])
     const [friendsList, setFriendsList] = useState<string[]>(['Jarvis', 'Ultron', 'Some ither'])
     const [friends, setFriends] = useState<string[]>([])
-    const [friendSearch,onFriendSearchChange]=useState('')
+    const [friendSearch, onFriendSearchChange] = useState('')
 
     const router = useRouter()
 
     useEffect(() => {
 
-        async function fetchUserProfiles(){
-            const _users=await getAllUserProfiles();
-            setUsers(_users.docs.map(doc=>doc.data() as UserProfile))
-            setFriendsList(_users.docs.map(doc=>`${doc.data().firstname} ${doc.data().lastname}`))
+        async function fetchUserProfiles() {
+            const _users = await getAllUserProfiles();
+            setUsers(_users.docs.map(doc => doc.data() as UserProfile))
+            setFriendsList(_users.docs.map(doc => `${doc.data().firstname} ${doc.data().lastname}`))
         }
-    
-       setDestinationsList(cities.map(c=>`${c.name} (${c.country})`))
-       fetchUserProfiles();
+
+        setDestinationsList(cities.map(c => `${c.name} (${c.country})`))
+        fetchUserProfiles();
     }, [])
 
     useEffect(() => {
-        setFriendsList(users.filter(f=>f.username.includes(friendSearch)).map(f=>f.username))
+        setFriendsList(users.filter(f => f.firstname.toUpperCase().includes(friendSearch.toUpperCase())).map(f => `${f.firstname} ${f.lastname}`))
     }, [friendSearch])
 
     const [active, setActive] = useState(0);
@@ -86,21 +86,21 @@ export function CreateTravelPlanForm(props: PaperProps) {
                             searchable
                             clearable
                             limit={10}
-                            
+
                             onChange={setDestinations}
 
                             getCreateLabel={(query) => `+ Add ${query}`}
                             onCreate={(query) => {
-                              const item = { value: query, label: query };
-                              setDestinationsList((current) => [...current, query]);
-                              return item;
+                                const item = { value: query, label: query };
+                                setDestinationsList((current) => [...current, query]);
+                                return item;
                             }} />
 
-                       
+
                     </form>
                     <div className="d-flex justify-content-between align-items-center mt-4">
                         <Button variant='outline' leftIcon={<IconArrowLeft size='1rem' />} onClick={prevStep}>Back</Button>
-                        <Button rightIcon={<IconArrowRight size='1rem' />} variant='outline' onClick={nextStep} disabled={destinations.length===0}>Next</Button>
+                        <Button rightIcon={<IconArrowRight size='1rem' />} variant='outline' onClick={nextStep} disabled={destinations.length === 0}>Next</Button>
                     </div>
                 </Stepper.Step>
                 <Stepper.Step
@@ -130,7 +130,7 @@ export function CreateTravelPlanForm(props: PaperProps) {
                     </form>
                     <div className="d-flex justify-content-between align-items-center mt-4">
                         <Button variant='outline' color='grey' onClick={nextStep}>Skip</Button>
-                        <Button rightIcon={<IconArrowRight size='1rem' />} variant='outline' onClick={nextStep} disabled={friends.length===0}>Next</Button>
+                        <Button rightIcon={<IconArrowRight size='1rem' />} variant='outline' onClick={nextStep} disabled={friends.length === 0}>Next</Button>
                     </div>
                 </Stepper.Step>
                 <Stepper.Step
