@@ -5,6 +5,7 @@ export interface UserProfile{
     email:string,
     bio:string,
     avatar:string,
+    travelPlans:TravelPlan[],
     [key:string]:any
 }
 
@@ -14,7 +15,8 @@ export interface UserProfileOverride{
     lastname?:string,
     email?:string,
     bio?:string,
-    avatar?:string
+    avatar?:string,
+    travelPlans?:TravelPlan[]
 }
 
 export interface Destination{
@@ -83,6 +85,6 @@ export interface TravelGroupOverride{
 
 export interface TravelPlan{
     id:string,
-    destinations:Destination
+    destinations:Destination[]
     group:TravelGroup,
 }

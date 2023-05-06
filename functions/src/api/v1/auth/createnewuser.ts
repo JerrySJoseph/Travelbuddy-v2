@@ -26,7 +26,8 @@ export const createNewUser=functions.https.onCall(async(data,context)=>{
             username,
             email,
             bio: '',
-            avatar: ''
+            avatar: '',
+            travelPlans:[]
         }
         await getFirestore().collection('profiles').doc(userRecord.uid).set(userProfile)
         return userProfile
