@@ -41,7 +41,7 @@ export interface UserReview{
     rating:number,
     comment:string,
     verified:Boolean,
-    datetime:number
+    datetime:any
 }
 export interface UserReviewOverride{
     id?:string
@@ -49,7 +49,7 @@ export interface UserReviewOverride{
     rating?:number,
     comment?:string,
     verified?:Boolean,
-    datetime?:number
+    datetime?:any
 }
 
 export interface TravelGroup{
