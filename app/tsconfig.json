@@ -21,7 +21,7 @@
       "@layout/*":["ui/layout/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "scripts/rewrite-destination-db.js"],
   "exclude": ["node_modules"],
   
 }

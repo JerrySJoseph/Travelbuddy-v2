@@ -16,7 +16,7 @@ const Dashboard = () => {
           <h3 className="h3">Travel Plans</h3>
           <Button variant='outline' onClick={()=>{setOpen(!open)}}>Crate new Travel plan</Button>
         </div>
-        <Modal opened={open} onClose={()=>{setOpen(false)}} centered size='xl'>
+        <Modal opened={open} onClose={()=>{setOpen(false)}} centered size='xl' style={{'overflow':'hidden'}}>
         <CreateTravelPlanForm/>
       </Modal>
       </div>

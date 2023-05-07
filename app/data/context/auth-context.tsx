@@ -5,9 +5,12 @@ import { useRouter } from "next/router";
 import LoadingFragment from "../../ui/sections/Loading";
 import { LoadingOverlay } from "@mantine/core";
 import {app} from '../../firebase/init'
+import { UserProfile } from "data/models/user";
+import { getUserProfileWithId } from "data/api/profile";
 
 type AuthContextProps = {
-    user: User | null,
+    user?: User ,
+    userProfile?:UserProfile,
     isAuthenticated?: boolean,
     loading:boolean,
     login: (email: string, password: string) => any,
@@ -15,7 +18,8 @@ type AuthContextProps = {
 }
 
 export const AuthContext = createContext<AuthContextProps>({
-    user: null,
+    user:undefined,
+    userProfile:undefined,
     isAuthenticated: false,
     loading:false,
     login: () => {},
@@ -25,8 +29,9 @@ export const AuthContext = createContext<AuthContextProps>({
 export const AuthContextProvider: FC<any> = (props) => {
 
     const {push}=useRouter();
-    const [user,setUser]=useState<User|null>(null);
+    const [user,setUser]=useState<User>();
     const [loading,setLoading]=useState<boolean>(true);
+    const [userProfile,setUserProfile]=useState<UserProfile>()
 
     useEffect(()=>{
         console.log('user changed',user)
@@ -34,9 +39,13 @@ export const AuthContextProvider: FC<any> = (props) => {
 
     useEffect(()=>{
 
-        const unsubscribe=onAuthStateChanged(getAuth(app),(newUser)=>{
+        const unsubscribe=onAuthStateChanged(getAuth(app),async (newUser)=>{
             setLoading(true);
-            setUser(newUser);
+            setUser(newUser?newUser:undefined);
+            if(newUser){
+                const profile=await getUserProfileWithId(newUser.uid)
+                setUserProfile(profile)
+            }
             console.log('auth state changed',user)
             if(!newUser)
                 push('/login');
@@ -50,6 +59,7 @@ export const AuthContextProvider: FC<any> = (props) => {
     const value: AuthContextProps = {
         user,
         loading,
+        userProfile,
         isAuthenticated: user !== null,
         login: (email: string, password: string) => signInWithEmailAndPassword(getAuth(), email, password),
         logout: () => signOut(getAuth())
