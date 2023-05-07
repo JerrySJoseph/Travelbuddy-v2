@@ -49,7 +49,7 @@ export const createNewUser = functions.https.onCall(async (data, context) => {
   
       return userProfile;
     } catch (error) {
-      throw new HttpsError('unknown', error.message);
+      throw new HttpsError('unknown', (error as Error).message);
     }
   });
   

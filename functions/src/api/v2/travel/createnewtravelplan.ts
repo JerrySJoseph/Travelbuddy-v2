@@ -64,7 +64,7 @@ export const createNewTravelPlan = functions.https.onCall(async (data, context) 
         code: 200,
       };
     } catch (error) {
-      throw new HttpsError('unknown', error.message);
+      throw new HttpsError('unknown', (error as Error).message);
     }
   });
   
