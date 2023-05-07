@@ -221,7 +221,7 @@ export function CreateTravelPlanForm(props: PaperProps) {
                         <ThemeIcon size='lg'>
                             <IconCalendar />
                         </ThemeIcon>
-                        <h3 className="h5 m-0 p-0">Choose tendative dates for your travel</h3>
+                        <h3 className="h5 m-0 p-0">Choose tentative dates for your travel</h3>
                         <small className="text-muted">Select a date range in which you are most likely to travel. Other group members can view the dates and decide accordingly.</small>
                     </div>
                     <Group position="center">
