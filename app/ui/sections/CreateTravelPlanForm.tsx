@@ -150,7 +150,7 @@ export function CreateTravelPlanForm(props: PaperProps) {
                             <IconCar />
                         </ThemeIcon>
                         <h3 className="h5 m-0 p-0">Create a New Travel Plan</h3>
-                        <small className="text-muted">Have an idea for your next trip? Find people with similar ideas and enjoy a trip together</small>
+                        <small className="text-muted">Have an idea for your next trip? Find people with similar ideas and enjoy a trip together!</small>
                     </div>
                     <form >
                         <MultiSelect
@@ -187,7 +187,7 @@ export function CreateTravelPlanForm(props: PaperProps) {
                             <IconUsers />
                         </ThemeIcon>
                         <h3 className="h5 m-0 p-0">Add Friends to your Travel Group</h3>
-                        <small className="text-muted">Do you have a travel group in mind? Invite all of your friends whom you wanna travel with.</small>
+                        <small className="text-muted">Do you have a travel group in mind? Invite all of your friends with whom you would like to travel!</small>
                     </div>
                     <form >
                         <TextInput
@@ -201,7 +201,7 @@ export function CreateTravelPlanForm(props: PaperProps) {
                             value={friends}
                             mt='sm'
                             label="Group Members"
-                            placeholder="Start typing to search members..."
+                            placeholder="Start typing to search for members..."
                             searchable
                             limit={10}
                             nothingFound="No such user found"
@@ -242,7 +242,7 @@ export function CreateTravelPlanForm(props: PaperProps) {
                             <IconCalendar />
                         </ThemeIcon>
                         <h3 className="h5 m-0 p-0">Summary about the Trip</h3>
-                        <small className="text-muted">Write an amazing summary about the trip you are planning to have. A good summary motivates your invited members to join you on this adventure.</small>
+                        <small className="text-muted">Write a short summary about the exciting trip you are planning to have. A good summary motivates your invited members to join you on this adventure.</small>
                     </div>
                     <Textarea
                         label="Summary (optional)"
