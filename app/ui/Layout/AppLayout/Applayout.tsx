@@ -1,7 +1,9 @@
 import TopBar from '@components/TopBar/TopBar'
-import { AppShell, createStyles } from '@mantine/core'
+import { Alert, AppShell, createStyles } from '@mantine/core'
 import { ReactNode } from 'react'
 import TopNavbar from '../../components/TopNavBar/TopNavbar'
+import { IconAlertCircle } from '@tabler/icons'
+import { useAppContext } from 'data/context/app-context'
 
 interface AppLayoutProps {
     children?: ReactNode
@@ -10,10 +12,18 @@ interface AppLayoutProps {
 
 const Applayout = ({ children, ...props }: AppLayoutProps) => {
 
+    const { error } = useAppContext();
     return (
         <>
             <TopNavbar />
+
             <main className='container pt-4' {...props}>
+                {
+                    error &&
+                    <Alert icon={<IconAlertCircle size="1rem" />} title="Error Occured!" color="red" className='mb-4'>
+                        {error.message}
+                    </Alert>
+                }
                 {children}
             </main>
         </>

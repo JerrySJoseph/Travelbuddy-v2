@@ -1,10 +1,9 @@
+import { getAuth } from 'firebase-admin/auth'
+import { getFirestore } from 'firebase-admin/firestore'
 import * as functions from 'firebase-functions'
-import {getAuth} from 'firebase-admin/auth'
-import {getFirestore} from 'firebase-admin/firestore'
-import { UserProfile } from '../../../models/user'
 import { HttpsError } from 'firebase-functions/v1/auth'
-import { checkNameExists, checkUserNameExists } from '../../../utils/checkExists'
 import { ApiError } from '../../../utils/ApiError'
+import { checkNameExists, checkUserNameExists } from '../../../utils/checkExists'
 
 export const createNewUser = functions.https.onCall(async (data, context) => {
     try {
@@ -49,7 +48,7 @@ export const createNewUser = functions.https.onCall(async (data, context) => {
   
       return userProfile;
     } catch (error) {
-      throw new HttpsError('unknown', error.message);
+      throw new HttpsError('unknown', (error as Error).message);
     }
   });
   

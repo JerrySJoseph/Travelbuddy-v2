@@ -3,13 +3,15 @@ import  {UserProfile, UserProfileOverride } from "../models/user";
 import {useTimeout} from 'usehooks-ts'
 
 interface IAppContext{
-    currentUserProfile?:UserProfile,
-    isAuthenticated:Boolean
+    error?:Error,
+    setError:(error:Error)=>any
 }
 
 const defaultAppContext:IAppContext={
-    currentUserProfile:undefined,
-    isAuthenticated:false
+   error:undefined,
+   setError() {
+       
+   },
 }
 
 const AppContext=createContext<IAppContext>(defaultAppContext)
@@ -21,12 +23,12 @@ interface IAppContextProviderProps{
 
 const AppContextProvider=({children}:IAppContextProviderProps)=>{
 
-    const [currentUserProfile,setcurrentUserProfile]=useState();
-    const [isAuthenticated,setIsAuthenticated]=useState<Boolean>(false)
+    const [error,setError]=useState<Error>();
+    
 
     const value:IAppContext={
-        currentUserProfile,
-        isAuthenticated
+        error,
+        setError
     }
 
 

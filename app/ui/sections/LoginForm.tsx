@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import {
-  Anchor, Button,
+  Anchor, Avatar, Button,
   Divider, Grid, Group, Paper, PaperProps, PasswordInput, Stack, Text, TextInput
 } from '@mantine/core';
 import { useState } from 'react';
@@ -38,8 +38,8 @@ export function LoginForm(props: PaperProps) {
   return (
     <div className="" {...props}>
 
-      <div className="text-center">
-        <img src='/img/mountain.png' className='img-thumbnail avatar avatar-lg' alt='' />
+      <div className="d-flex justify-content-center">
+        <Avatar src={'/img/panda.png'} className='d-block' size='xl'/>
       </div>
       <div className="text-center mb-4">
         <h3 className="h4 m-0 p-0">Welcome to TravelBuddy</h3>
@@ -75,10 +75,7 @@ export function LoginForm(props: PaperProps) {
           </Text>
         </Link>
       </form>
-      <Divider label="Or continue with email" labelPosition="center" my="lg" />
-      <Group grow mb="md" mt="md">
-        <Button variant='outline' leftIcon={<IconBrandGoogle />} color='green'  >Continue with Google</Button>
-      </Group>
+      
     </div>
   );
 }

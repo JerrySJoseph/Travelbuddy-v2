@@ -10,6 +10,7 @@ import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import { app } from '../firebase/init'
 import { AuthContextProvider } from 'data/context/auth-context';
+import AppContextProvider from 'data/context/app-context';
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -41,9 +42,12 @@ export default function App(props: AppProps) {
             colorScheme
           }}
         >
-          <AuthContextProvider>
-            <Component {...pageProps} />
-          </AuthContextProvider>
+          <AppContextProvider>
+            <AuthContextProvider>
+              <Component {...pageProps} />
+            </AuthContextProvider>
+          </AppContextProvider>
+
         </MantineProvider>
       </ColorSchemeProvider>
 

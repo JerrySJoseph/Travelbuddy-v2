@@ -101,6 +101,7 @@ export interface TravelPlan{
     createdBy?:UserProfile
     destinations:Destination[]
     group:TravelGroup,
+    inviteMembers:UserProfile[]
     isPrivate:Boolean,
     travellingDateRange:{
         start:number,
@@ -116,6 +117,7 @@ export interface TravelPlanOverride{
     destinations?:Destination[]
     group?:TravelGroup,
     isPrivate?:Boolean,
+    inviteMembers?:UserProfile[]
     travellingDateRange?:{
         start?:number,
         end?:number,
@@ -140,5 +142,6 @@ export interface TravelPlanInvite{
     travelPlan:TravelPlan,
     datetime:any,
     recipient:UserProfile,
-    status:'PENDING'|'ACCEPTED'|'REJECTED'
+    status:'PENDING'|'ACCEPTED'|'REJECTED',
+    respondDatetime?:any
 }

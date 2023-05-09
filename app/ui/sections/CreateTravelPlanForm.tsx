@@ -109,7 +109,7 @@ export function CreateTravelPlanForm(props: PaperProps) {
                 id: uuid(),
                 name: travelGroupName,
                 createdBy: userProfile,
-                members: friendProfiles,
+                members: [],
                 type: 'travel-group'
             }
             const travelPlan: TravelPlan = {
@@ -118,6 +118,7 @@ export function CreateTravelPlanForm(props: PaperProps) {
                 destinations: destinationObjects,
                 group: travelGroup,
                 isPrivate,
+                inviteMembers:friendProfiles,
                 travellingDateRange: {
                     start: dates[0]?.getTime() || 0,
                     end: dates[1]?.getTime() || 0,

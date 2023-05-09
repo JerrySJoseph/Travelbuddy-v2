@@ -2,6 +2,7 @@
 import Spinner from '@components/Spinner/Spinner';
 import {
   Alert,
+  Avatar,
   Button,
   PaperProps, PasswordInput,
   Text, TextInput
@@ -25,14 +26,14 @@ export function RegisterForm(props: PaperProps) {
 
 
   //Errors
- 
-  const [formError,setFormError]=useState<string>()
-  const [loading,setLoading]=useState<Boolean>(false);
 
-  const router=useRouter();
+  const [formError, setFormError] = useState<string>()
+  const [loading, setLoading] = useState<Boolean>(false);
 
-  function validate_inputs(){
-    if(password!==confirm_password){
+  const router = useRouter();
+
+  function validate_inputs() {
+    if (password !== confirm_password) {
       setFormError('Passwords do not match')
     }
   }
@@ -40,11 +41,11 @@ export function RegisterForm(props: PaperProps) {
   async function handleRegister() {
     try {
       setLoading(true)
-      await createNewUser(email, password, firstname, lastname,username)
+      await createNewUser(email, password, firstname, lastname, username)
       router.replace('/login')
     } catch (error) {
       setFormError((error as Error).message)
-    } finally{
+    } finally {
       setLoading(false)
     }
   }
@@ -53,8 +54,8 @@ export function RegisterForm(props: PaperProps) {
   return (
     <div className="" {...props}>
 
-      <div className="text-center">
-        <img src='/img/mountain.png' className='img-thumbnail avatar avatar-lg' alt='' />
+      <div className="d-flex justify-content-center">
+        <Avatar src={'/img/panda.png'} className='d-block' size='xl' />
       </div>
       <div className="text-center mb-4">
         <h3 className="h4 m-0 p-0">Create a new Account</h3>
@@ -80,7 +81,7 @@ export function RegisterForm(props: PaperProps) {
               placeholder="Eg: Doe"
               value={lastname}
               onChange={e => setLastName(e.target.value)}
-              
+
             />
           </div>
           <div className="col-lg-6">
@@ -90,7 +91,7 @@ export function RegisterForm(props: PaperProps) {
               placeholder="Eg: iamjohndoe"
               value={username}
               onChange={e => setUsername(e.target.value)}
-              
+
             />
           </div>
           <div className="col-lg-6">
@@ -100,7 +101,7 @@ export function RegisterForm(props: PaperProps) {
               placeholder="user@example.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              
+
             />
           </div>
           <div className="col-lg-6">
@@ -110,7 +111,7 @@ export function RegisterForm(props: PaperProps) {
               placeholder="Your password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              
+
             />
           </div>
           <div className="col-lg-6">
@@ -120,16 +121,16 @@ export function RegisterForm(props: PaperProps) {
               placeholder="Your password"
               value={confirm_password}
               onChange={e => setConfirmPassword(e.target.value)}
-              
+
             />
           </div>
           {formError &&
             <div className="col-lg-12">
-             <Alert icon={<IconAlertCircle size={18}/>} title='Error Occured' color='red' variant='light'>{formError}</Alert>
+              <Alert icon={<IconAlertCircle size={18} />} title='Error Occured' color='red' variant='light'>{formError}</Alert>
             </div>}
-            
+
           <div className="col-lg-12">
-            <Button leftIcon={loading?<Spinner/>:<IconSend size={18}/>} className='w-100' onClick={handleRegister}>{loading?'Creating your account...':'Create account'}</Button>
+            <Button leftIcon={loading ? <Spinner /> : <IconSend size={18} />} className='w-100' onClick={handleRegister}>{loading ? 'Creating your account...' : 'Create account'}</Button>
           </div>
 
         </div>
@@ -141,7 +142,7 @@ export function RegisterForm(props: PaperProps) {
           </Text>
         </Link>
       </form>
-      
+
     </div>
   );
 }

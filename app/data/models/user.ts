@@ -7,7 +7,9 @@ export interface UserProfile{
     bio:string,
     avatar:string,
     travelPlans:TravelPlan[],
-    username:string
+    username:string,
+    rating:number,
+    reviews:UserReview[]
     [key:string]:any
 }
 
@@ -40,6 +42,7 @@ export interface Destination{
     city:string,
     country:string,
     attractions:string[],
+    rating:number,
     reviews:UserReview[]
 }
 
@@ -49,7 +52,9 @@ export interface DestinationOverride{
     city?:string,
     country?:string,
     attractions?:string[],
-    reviews?:UserReview[]
+    reviews?:UserReview[],
+    rating?:number,
+    
 }
 
 export interface UserReview{
@@ -77,7 +82,8 @@ export interface TravelGroup{
     name:string,
     createdBy?:UserProfile,
     members:UserProfile[],
-    
+    rating?:number,
+    reviews?:UserReview[]
 }
 
 
@@ -93,6 +99,8 @@ export interface TravelGroupOverride{
         flexibility?:number
     },
     summary?:string
+    rating?:number,
+    reviews?:UserReview[]
 }
 
 export interface TravelPlan{
@@ -101,6 +109,7 @@ export interface TravelPlan{
     createdBy?:UserProfile
     destinations:Destination[]
     group:TravelGroup,
+    inviteMembers:UserProfile[]
     isPrivate:Boolean,
     travellingDateRange:{
         start:number,
@@ -108,6 +117,7 @@ export interface TravelPlan{
         flexibility:number
     },
     summary:string,
+    interestedMembers?:UserProfile[]
 }
 
 export interface TravelPlanOverride{
@@ -116,12 +126,14 @@ export interface TravelPlanOverride{
     destinations?:Destination[]
     group?:TravelGroup,
     isPrivate?:Boolean,
+    inviteMembers?:UserProfile[]
     travellingDateRange?:{
         start?:number,
         end?:number,
         flexibility?:number
     },
     summary?:string,
+    interestedMembers?:UserProfile[]
 }
 
 export interface Notification{

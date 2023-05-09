@@ -28,21 +28,25 @@ export const createNewTravelPlan = functions.https.onCall(async (data, context) 
 
         const currentUser = (await firestore.collection('profiles').doc(context.auth.uid).get()).data() as UserProfile
 
-        const notification: Notification = {
-            id: uuid(),
-            type: 'notification',
-            notificationType: 'notif-travelplan-invite',
-            title: 'You have been invited',
-            content: `${currentUser.firstname} has invited you to join his next trip to ${_tp.destinations.join(', ')}`,
-            datetime: database.ServerValue.TIMESTAMP
-        }
-    
-        await rtdb.ref('notifications').child(context.auth.uid).child(notification.id).set(notification)
+        
 
         //create invites
         const invitePromises: Promise<any>[] = []
-        _tp.group.members.forEach(async m => {
+        _tp.inviteMembers.forEach(async m => {
 
+            //send notifications
+            const notification: Notification = {
+                id: uuid(),
+                type: 'notification',
+                notificationType: 'notif-travelplan-invite',
+                title: 'You have been invited',
+                content: `${currentUser.firstname} has invited you to join his next trip.`,
+                datetime: database.ServerValue.TIMESTAMP
+            }
+        
+            invitePromises.push(rtdb.ref('notifications').child(m.id).child(notification.id).set(notification))
+
+            // send invites
             const tpInvite: TravelPlanInvite = {
                 type: 'travel-plan-invite',
                 id: uuid(),
@@ -53,7 +57,7 @@ export const createNewTravelPlan = functions.https.onCall(async (data, context) 
                 status: 'PENDING'
             }
 
-            invitePromises.push(firestore.collection('travel-plan-invites').doc(m.id).set(tpInvite))
+            invitePromises.push(rtdb.ref('travel-plan-invites').child(m.id).child('invites').child(tpInvite.id).set(tpInvite))
         })
         await Promise.all(invitePromises)
 

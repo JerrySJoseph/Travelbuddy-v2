@@ -33,7 +33,7 @@ export const createNewUser=functions.https.onCall(async(data,context)=>{
             username,
             email,
             bio: '',
-            avatar: '',
+            avatar: 'https://d11b3pf7ulbs6a.cloudfront.net/static/img/panda.png',
             travelPlans: [],
             type: 'user-profile'
         }
