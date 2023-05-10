@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { ActionIcon, Autocomplete, Avatar, Button, Divider, Indicator, Menu, Skeleton, ThemeIcon, useMantineTheme } from "@mantine/core"
-import { IconBell, IconCar, IconPower, IconSearch, IconUser, IconUserPlus } from "@tabler/icons"
+import { IconBell, IconCar, IconDashboard, IconPower, IconSearch, IconUser, IconUserPlus } from "@tabler/icons"
 import { useAuth } from "data/hooks/useAuth"
 import { useNotifications } from "data/hooks/useNotifications"
 import { useTravelPlanInvites } from "data/hooks/useTravelPlanInvites"
@@ -43,6 +43,7 @@ export default TopNavbar
 export function NotificationMenu({ ...props }) {
     const theme = useMantineTheme();
     const { user } = useAuth()
+   
 
     const { notifications, loading, error } = useNotifications()
 
@@ -97,7 +98,7 @@ export function NotificationMenu({ ...props }) {
 export function UserControlMenu() {
     const theme = useMantineTheme();
     const { user, logout, userProfile } = useAuth()
-
+    const {push}=useRouter()
     return (
         <Menu
             position="top-end"
@@ -124,10 +125,10 @@ export function UserControlMenu() {
                 </Menu.Item>
                 <Divider />
                 <Menu.Item
-
-                    icon={<IconUser size="1rem" color={theme.colors.blue[6]} stroke={1.5} />}
+                    onClick={()=>push('/app/dashboard')}
+                    icon={<IconDashboard size="1rem" color={theme.colors.blue[6]} stroke={1.5}/>}
                 >
-                    My Profile
+                    My Dashboard
                 </Menu.Item>
                 <Menu.Item
                     icon={<IconCar size="1rem" color={theme.colors.pink[6]} stroke={1.5} />}>

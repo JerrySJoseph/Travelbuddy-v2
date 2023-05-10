@@ -10,6 +10,8 @@ export interface UserProfile{
     username:string,
     rating:number,
     reviews:UserReview[]
+    followersCount:number,
+    followedCount:number,
     [key:string]:any
 }
 

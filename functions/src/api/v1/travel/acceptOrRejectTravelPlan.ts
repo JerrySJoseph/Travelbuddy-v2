@@ -14,7 +14,7 @@ export const acceptOrRejectTravelPlan = functions.https.onCall(async (data, cont
 
 
         if (!travelPlanInvite || !travelPlanInvite.type || travelPlanInvite.type !== 'travel-plan-invite')
-            throw new ApiError('auth/insufficient-params', 'Insufficient params in request')
+            throw new ApiError(400, 'Insufficient params in request')
 
         const _tpi = travelPlanInvite as TravelPlanInvite
 

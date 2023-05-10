@@ -11,7 +11,7 @@ export const createNewUser = functions.https.onCall(async (data, context) => {
   
       if (!email || !password || !firstname || !lastname || !username) {
         throw new ApiError(
-          'auth/insufficient-params',
+          400,
           'Insufficient params in request'
         );
       }

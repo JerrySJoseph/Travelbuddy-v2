@@ -107,12 +107,7 @@ const Dashboard = () => {
                     <Skeleton height={16} width='20%' radius="xl" />
                     <Skeleton height={10} width='40%' radius="xl" />
                 </div>
-                {
-                    recievedInvite &&
-                    <Alert icon={<IconAlertCircle size="1rem" />} title={`${recievedInvite.owner.firstname} Invited you for this trip`} color='green'>
-                        Something terrible happened! You made a mistake and there is no going back, your data was lost forever!
-                    </Alert>
-                }
+                
                 <Modal opened={open} onClose={() => { setOpen(false) }} centered size='xl' style={{ 'overflow': 'hidden' }}>
                     <CreateTravelPlanForm />
                 </Modal>
@@ -195,9 +190,7 @@ const Dashboard = () => {
                             ))}
                         </div>
 
-                        <Modal opened={open} onClose={() => { setOpen(false) }} centered size='xl' style={{ 'overflow': 'hidden' }}>
-                            <CreateTravelPlanForm />
-                        </Modal>
+                       
                     </div>
                 </div>
                 <div className="col-lg-4">

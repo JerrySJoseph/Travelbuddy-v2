@@ -18,7 +18,7 @@ export const createNewTravelPlan = functions.https.onCall(async (data, context) 
 
         functions.logger.warn(data)
         if (!travelPlan || !travelPlan.type || travelPlan.type !== 'travel-plan')
-            throw new ApiError('auth/insufficient-params', 'Insufficient params in request')
+            throw new ApiError(400, 'Insufficient params in request')
 
         const _tp = travelPlan as TravelPlan
 
@@ -41,7 +41,8 @@ export const createNewTravelPlan = functions.https.onCall(async (data, context) 
                 notificationType: 'notif-travelplan-invite',
                 title: 'You have been invited',
                 content: `${currentUser.firstname} has invited you to join his next trip.`,
-                datetime: database.ServerValue.TIMESTAMP
+                datetime: database.ServerValue.TIMESTAMP,
+                seen: false
             }
         
             invitePromises.push(rtdb.ref('notifications').child(m.id).child(notification.id).set(notification))

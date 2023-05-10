@@ -1,7 +1,8 @@
 import { TravelPlan, TravelPlanInvite } from "data/models/user";
-import {doc, getFirestore, getDoc} from 'firebase/firestore/lite'
+import {doc, getFirestore, getDoc,query, where, orderBy} from 'firebase/firestore'
 import { getFunctions, httpsCallable } from "firebase/functions";
 import {app} from "../../firebase/init";
+import { collection, getDocs } from "firebase/firestore";
 
 
 export async function createNewTravelPlan(travelPlan:TravelPlan): Promise<Boolean> {
@@ -35,10 +36,27 @@ export async function acceptOrRejectTravelPlanInvite(travelPlanInvite:TravelPlan
 
 export async function getTravelPlan(tpid:string):Promise<TravelPlan>{
     try {
-        const firestore=getFirestore()
+        const firestore=getFirestore(app)
         const docRef=doc(firestore,'travel-plans',tpid)
         const travelPlanDoc=await getDoc(docRef)
         return travelPlanDoc.data() as TravelPlan
+    } catch (error) {
+        console.log('API ERROR',error)
+        throw error
+    }
+}
+
+
+export async function getPublicTravelPlans():Promise<TravelPlan[]>{
+    try {
+        
+        const q=query(collection(getFirestore(app),'travel-plans'),where('isPrivate','==',false))
+        const travelPlanDoc=await getDocs(q)
+        const list:TravelPlan[]=[]
+        travelPlanDoc.forEach(doc=>{
+            list.push(doc.data() as TravelPlan)
+        })
+        return list
     } catch (error) {
         console.log('API ERROR',error)
         throw error

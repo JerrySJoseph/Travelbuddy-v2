@@ -1,10 +1,11 @@
 import * as functions from 'firebase-functions'
 import {getAuth} from 'firebase-admin/auth'
 import {getFirestore} from 'firebase-admin/firestore'
-import { UserProfile } from '../../../models/user'
+import { ShortProfile, UserProfile } from '../../../models/user'
 import { HttpsError } from 'firebase-functions/v1/auth'
 import { checkNameExists, checkUserNameExists } from '../../../utils/checkExists'
 import { ApiError } from '../../../utils/ApiError'
+import { URL_DEFAULT_AVATAR } from '../../../Constants'
 
 export const createNewUser=functions.https.onCall(async(data,context)=>{
     
@@ -12,7 +13,7 @@ export const createNewUser=functions.https.onCall(async(data,context)=>{
         const {email,password,firstname,lastname,username}=data
         
         if(!email ||!password ||!firstname || !lastname || !username)
-            throw new ApiError('auth/insufficient-params','Insufficient params in request')
+            throw new ApiError(400,'Insufficient params in request')
         
         await checkUserNameExists(username);
         await checkNameExists(firstname,lastname)
@@ -22,7 +23,7 @@ export const createNewUser=functions.https.onCall(async(data,context)=>{
             emailVerified:false,
             password,
             displayName:`${firstname} ${lastname}`,
-            photoURL: 'https://d11b3pf7ulbs6a.cloudfront.net/static/img/panda.png',
+            photoURL: URL_DEFAULT_AVATAR,
             disabled:false
         })
         
@@ -33,11 +34,27 @@ export const createNewUser=functions.https.onCall(async(data,context)=>{
             username,
             email,
             bio: '',
-            avatar: 'https://d11b3pf7ulbs6a.cloudfront.net/static/img/panda.png',
+            avatar: URL_DEFAULT_AVATAR,
             travelPlans: [],
-            type: 'user-profile'
+            type: 'user-profile',
+            followersCount: 0,
+            followedCount: 0
         }
-        await getFirestore().collection('profiles').doc(userRecord.uid).set(userProfile)
+        
+        const shortProfile:ShortProfile={
+            type: 'short-profile',
+            id: userRecord.uid,
+            firstname,
+            lastname,
+            username,
+            avatar: URL_DEFAULT_AVATAR
+        }
+
+        await Promise.all([
+            getFirestore().collection('profiles').doc(userRecord.uid).set(userProfile),
+            getFirestore().collection('short-profiles').doc(userRecord.uid).set(shortProfile)
+        ])
+       
         return userProfile
         
     } catch (error) {

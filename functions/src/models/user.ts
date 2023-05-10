@@ -7,8 +7,19 @@ export interface UserProfile{
     bio:string,
     avatar:string,
     travelPlans:TravelPlan[],
-    username:string
+    username:string,
+    followersCount:number,
+    followedCount:number,
     [key:string]:any
+}
+
+export interface ShortProfile{
+    type:'short-profile',
+    id:string,
+    firstname:string,
+    lastname:string,
+    username:string,
+    avatar:string,
 }
 
 export interface UserProfileOverride{
@@ -132,6 +143,7 @@ export interface Notification{
     notificationType:string,
     title:string,
     content:string,
+    seen:boolean,
     datetime:any
 }
 
@@ -144,4 +156,21 @@ export interface TravelPlanInvite{
     recipient:UserProfile,
     status:'PENDING'|'ACCEPTED'|'REJECTED',
     respondDatetime?:any
+}
+
+
+export interface FollowRequest{
+    id:string,
+    owner:string,
+    recipient:string,
+    datetime:any
+    status:'PENDING'|'ACCEPTED'|"REJECTED"
+}
+
+export interface Relationship{
+    followerId:string,
+    followedId:string,
+    follower:ShortProfile,
+    followed:ShortProfile
+    datetime:any
 }

@@ -17,7 +17,7 @@ const Applayout = ({ children, ...props }: AppLayoutProps) => {
         <>
             <TopNavbar />
 
-            <main className='container pt-4' {...props}>
+            <main className='container-fluid pt-4' {...props}>
                 {
                     error &&
                     <Alert icon={<IconAlertCircle size="1rem" />} title="Error Occured!" color="red" className='mb-4'>

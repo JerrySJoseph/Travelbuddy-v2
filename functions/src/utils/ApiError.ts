@@ -1,6 +1,6 @@
 export class ApiError extends Error{
-    code:string
-    constructor(code:string,message:string){
+    code:number
+    constructor(code:number,message:string){
         super(message)
         this.code=code;
     }
