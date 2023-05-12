@@ -227,5 +227,5 @@ const RequestAcceptRejectButton = ({ followRequest, variant = 'accept' }: IReque
     }
 
     return <Button compact variant="outline" mr='md' onClick={handleAcceptOrReject}
-        loading leftIcon={<IconCheck size={15} />} color={variant === 'reject' ? 'red' : 'green'}>{variant === 'accept' ? 'Accept' : 'Reject'}{loading && 'ing'}</Button>
+        loading={loading} leftIcon={<IconCheck size={15} />} color={variant === 'reject' ? 'red' : 'green'}>{variant === 'accept' ? 'Accept' : 'Reject'}{loading && 'ing'}</Button>
 }
