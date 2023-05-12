@@ -10,10 +10,14 @@ import { URL_DEFAULT_AVATAR } from '../../../Constants'
 export const createNewUser=functions.https.onCall(async(data,context)=>{
     
     try {
-        const {email,password,firstname,lastname,username}=data
+        let {email,password,firstname,lastname,username}=data
         
         if(!email ||!password ||!firstname || !lastname || !username)
             throw new ApiError(400,'Insufficient params in request')
+        
+        firstname=(firstname as String).toLowerCase()
+        lastname=(lastname as String).toLowerCase()
+        username=(username as String).toLowerCase()
         
         await checkUserNameExists(username);
         await checkNameExists(firstname,lastname)

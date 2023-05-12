@@ -4,57 +4,53 @@ import { User, getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged 
 import { useRouter } from "next/router";
 import LoadingFragment from "../../ui/sections/Loading";
 import { LoadingOverlay } from "@mantine/core";
-import {app} from '../../firebase/init'
+import { app } from '../../firebase/init'
 import { UserProfile } from "data/models/user";
 import { getUserProfileWithId } from "data/api/profile";
 
 type AuthContextProps = {
-    user?: User ,
-    userProfile?:UserProfile,
+    user?: User,
+    userProfile?: UserProfile,
     isAuthenticated?: boolean,
-    loading:boolean,
+    loading: boolean,
     login: (email: string, password: string) => any,
     logout: () => any
 }
 
 export const AuthContext = createContext<AuthContextProps>({
-    user:undefined,
-    userProfile:undefined,
+    user: undefined,
+    userProfile: undefined,
     isAuthenticated: false,
-    loading:false,
-    login: () => {},
-    logout: () => {},
+    loading: false,
+    login: () => { },
+    logout: () => { },
 });
 
 export const AuthContextProvider: FC<any> = (props) => {
 
-    const {push}=useRouter();
-    const [user,setUser]=useState<User>();
-    const [loading,setLoading]=useState<boolean>(true);
-    const [userProfile,setUserProfile]=useState<UserProfile>()
+    const { push } = useRouter();
+    const [user, setUser] = useState<User>();
+    const [loading, setLoading] = useState<boolean>(true);
+    const [userProfile, setUserProfile] = useState<UserProfile>()
 
-    useEffect(()=>{
-        console.log('user changed',user)
-    },[user])
 
-    useEffect(()=>{
+    useEffect(() => {
 
-        const unsubscribe=onAuthStateChanged(getAuth(app),async (newUser)=>{
+        const unsubscribe = onAuthStateChanged(getAuth(app), async (newUser) => {
             setLoading(true);
-            setUser(newUser?newUser:undefined);
-            if(newUser){
-                const profile=await getUserProfileWithId(newUser.uid)
+            setUser(newUser ? newUser : undefined);
+            if (newUser) {
+                const profile = await getUserProfileWithId(newUser.uid)
                 setUserProfile(profile)
             }
-            console.log('auth state changed',user)
-            if(!newUser)
+            if (!newUser)
                 push('/login');
-           
+
             setLoading(false);
         })
 
-        return ()=>unsubscribe();
-    },[])
+        return () => unsubscribe();
+    }, [])
 
     const value: AuthContextProps = {
         user,
@@ -65,10 +61,10 @@ export const AuthContextProvider: FC<any> = (props) => {
         logout: () => signOut(getAuth())
     }
 
-   
+
 
     return <AuthContext.Provider value={value}>
-        <LoadingOverlay visible={loading} overlayBlur={2}/>
+        <LoadingOverlay visible={loading} overlayBlur={2} />
         {!loading && props.children}
     </AuthContext.Provider>
 }

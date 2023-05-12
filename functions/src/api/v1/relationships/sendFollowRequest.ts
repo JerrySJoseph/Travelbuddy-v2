@@ -1,13 +1,14 @@
 import { FieldValue, getFirestore } from 'firebase-admin/firestore'
 import * as functions from 'firebase-functions'
-import { FollowRequest } from '../../../models/user'
+import { FollowRequest, ShortProfile } from '../../../models/user'
 import { ApiError } from '../../../utils/ApiError'
 import { COLLECTION_FOLLOW_REQUESTS } from '../../../Constants'
 import { HttpsError } from 'firebase-functions/v1/auth'
-
+import { getDatabase } from 'firebase-admin/database'
+import {v4 as uuid} from 'uuid'
 
 // save follow request object to DB
-export const sendFollowRequest = functions.https.onCall((data, context) => {
+export const sendFollowRequest = functions.https.onCall(async (data, context) => {
     try {
 
         const { recipientId } = data
@@ -18,17 +19,25 @@ export const sendFollowRequest = functions.https.onCall((data, context) => {
         if (!recipientId)
             throw new ApiError(400, 'Bad request')
 
-        const followRequestId = `${context.auth.uid}_${recipientId}`
+        const followRequestId = uuid()
+        const firestoreDB = getFirestore();
+
+        const [ownerShortProfile, recipientShortProfile] = await Promise.all([
+            (firestoreDB.collection('short-profiles').doc(context.auth.uid).get()),
+            (firestoreDB.collection('short-profiles').doc(recipientId).get()),
+        ])
+
         const followRequest: FollowRequest = {
             id: followRequestId,
-            owner: context.auth.uid,
-            recipient: recipientId,
+            ownerId: context.auth.uid,
+            owner: ownerShortProfile.data() as ShortProfile,
+            recipient: recipientShortProfile.data() as ShortProfile,
+            recipientId: recipientId,
             datetime: FieldValue.serverTimestamp(),
             status: 'PENDING'
         }
 
-        const firestoreDB = getFirestore();
-        return firestoreDB.collection(COLLECTION_FOLLOW_REQUESTS).doc(followRequestId).set(followRequest)
+        return getDatabase().ref(COLLECTION_FOLLOW_REQUESTS).child(recipientId).child(context.auth.uid).set(followRequest)
 
     } catch (error) {
         if (error instanceof ApiError)

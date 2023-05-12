@@ -7,17 +7,17 @@ import { useAppContext } from 'data/context/app-context'
 
 interface AppLayoutProps {
     children?: ReactNode
+    isFluid?:boolean
     [key: string]: any
 }
 
-const Applayout = ({ children, ...props }: AppLayoutProps) => {
+const Applayout = ({ isFluid=false, children, ...props }: AppLayoutProps) => {
 
     const { error } = useAppContext();
     return (
         <>
-            <TopNavbar />
-
-            <main className='container-fluid pt-4' {...props}>
+            <TopNavbar isFluid={isFluid}/>
+            <main className={`container${isFluid ? '-fluid':''} pt-4`} {...props}>
                 {
                     error &&
                     <Alert icon={<IconAlertCircle size="1rem" />} title="Error Occured!" color="red" className='mb-4'>

@@ -1,4 +1,4 @@
-import { Center, Container, createStyles, Grid } from '@mantine/core';
+import { Card, Center, Container, createStyles, Grid } from '@mantine/core';
 import AppContextProvider from '../data/context/app-context';
 import Applayout from '../ui/Layout/AppLayout/Applayout';
 import { useCommonStyles } from '../Utils/commonStyles';
@@ -33,9 +33,9 @@ const App = () => {
     return (
         <AppContextProvider>
             <div className={`container-fluid m-0 p-0 vh-100 d-flex justify-content-center align-items-center ${useStyles().classes.background}`}>
-                <div className="card p-4 shadow col-lg-3">
+                <Card shadow='xl'>
                     <LoginForm />
-                </div>
+                </Card>
             </div>
         </AppContextProvider>
     )

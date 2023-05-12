@@ -51,7 +51,7 @@ export function CreateTravelPlanForm(props: PaperProps) {
         async function fetchData() {
             const _users = await getAllUserProfiles();
             const destinations = await getDestinations();
-            setFriendsList(_users.docs.map(doc => `${doc.data().firstname} ${doc.data().lastname}`))
+            setFriendsList(_users.map(doc => `${doc.firstname} ${doc.lastname}`))
             setDestinationsList(destinations.map(d => {
                 return {
                     label: `${d.name} - ${d.country}`,

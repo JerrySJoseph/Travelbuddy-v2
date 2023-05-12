@@ -15,6 +15,15 @@ export interface UserProfile{
     [key:string]:any
 }
 
+export interface ShortProfile{
+    type:'short-profile',
+    id:string,
+    firstname:string,
+    lastname:string,
+    username:string,
+    avatar:string,
+}
+
 export interface UserProfileOverride{
     id?:string,
     firstname?:string,
@@ -155,4 +164,14 @@ export interface TravelPlanInvite{
     datetime:any,
     recipient:UserProfile,
     status:'PENDING'|'ACCEPTED'|'REJECTED'
+}
+
+export interface FollowRequest{
+    id:string,
+    owner:ShortProfile,
+    recipient:ShortProfile,
+    ownerId:string,
+    recipientId:string
+    datetime:any
+    status:'PENDING'|'ACCEPTED'|"REJECTED"
 }

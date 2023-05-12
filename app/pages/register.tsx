@@ -1,4 +1,4 @@
-import { createStyles } from '@mantine/core';
+import { Card, createStyles } from '@mantine/core';
 import AppContextProvider from '../data/context/app-context';
 import login_hero from '../public/img/login_hero2.svg';
 import { LoginForm } from '../ui/sections/LoginForm';
@@ -32,9 +32,9 @@ const Register = () => {
     return (
         <AppContextProvider>
             <div className={`container-fluid m-0 p-0 vh-100 d-flex justify-content-center align-items-center ${useStyles().classes.background}`}>
-                <div className="card p-4 shadow col-lg-4">
+                <Card shadow='xl' className='col-lg-4'>
                     <RegisterForm />
-                </div>
+                </Card>
             </div>
         </AppContextProvider>
     )

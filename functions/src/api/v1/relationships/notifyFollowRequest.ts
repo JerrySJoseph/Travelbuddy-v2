@@ -1,7 +1,6 @@
 import { database } from 'firebase-admin'
 import { getAuth } from 'firebase-admin/auth'
 import { getDatabase } from 'firebase-admin/database'
-import { QueryDocumentSnapshot } from 'firebase-admin/firestore'
 import * as functions from 'firebase-functions'
 import { HttpsError } from 'firebase-functions/v1/https'
 import { v4 as uuid } from 'uuid'
@@ -10,17 +9,17 @@ import { FollowRequest, Notification } from '../../../models/user'
 import { ApiError } from '../../../utils/ApiError'
 
 
-const handleNotifyOnNewFollowRequest = async (snap: QueryDocumentSnapshot, context: functions.EventContext) => {
+const handleNotifyOnNewFollowRequest = async (snap: functions.database.DataSnapshot) => {
 
     try {
-        if (!context.auth)
-            throw new ApiError(401, 'Unauthorized')
 
         const rtdb = getDatabase()
-        const followRequest: FollowRequest = snap.data() as FollowRequest
+        const followRequest: FollowRequest = snap.val() as FollowRequest
         const notificationId = uuid()
 
-        const owner_data = await getAuth().getUser(context.auth.uid)
+        functions.logger.debug('New follow request detected. Sending Notification to ', followRequest.recipient.firstname)
+
+        const owner_data = await getAuth().getUser(followRequest.owner.id)
 
         const notification: Notification = {
             type: 'notification',
@@ -31,19 +30,25 @@ const handleNotifyOnNewFollowRequest = async (snap: QueryDocumentSnapshot, conte
             seen: false,
             datetime: database.ServerValue.TIMESTAMP
         }
-        return rtdb.ref(COLLECTION_NOTIFICATION).child(followRequest.recipient).child(notificationId).set(notification)
+
+        await rtdb.ref(COLLECTION_NOTIFICATION).child(followRequest.recipientId).child(notificationId).set(notification)
+        functions.logger.debug('New follow request notification sent to ', followRequest.recipient.firstname)
+        return true;
+
     } catch (error) {
+        functions.logger.error(error)
         if (error instanceof ApiError)
             return {
                 message: error.message,
                 code: error.code
             }
+
         throw new HttpsError('internal', (error as Error).message || 'Internal Error occured')
     }
 }
 
 
 
-export const notifyOnNewFollowRequest = functions.firestore
-    .document(`${COLLECTION_FOLLOW_REQUESTS}/{docId}`)
+export const notifyOnNewFollowRequest = functions.database
+    .ref(`/${COLLECTION_FOLLOW_REQUESTS}/{user1}/{user2}/{followrequestId}`)
     .onCreate(handleNotifyOnNewFollowRequest)

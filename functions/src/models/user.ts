@@ -161,8 +161,10 @@ export interface TravelPlanInvite{
 
 export interface FollowRequest{
     id:string,
-    owner:string,
-    recipient:string,
+    owner:ShortProfile,
+    recipient:ShortProfile,
+    ownerId:string,
+    recipientId:string
     datetime:any
     status:'PENDING'|'ACCEPTED'|"REJECTED"
 }
