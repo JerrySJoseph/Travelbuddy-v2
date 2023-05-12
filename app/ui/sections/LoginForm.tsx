@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import {
   Anchor, Avatar, Button,
-  Divider, Grid, Group, Paper, PaperProps, PasswordInput, Stack, Text, TextInput
+  Divider, Grid, Group, Paper, PaperProps, PasswordInput, Stack, Text, TextInput, Title
 } from '@mantine/core';
 import { useState } from 'react';
 import GoogleImg from './google.png'
@@ -12,6 +12,7 @@ import { app } from '../../firebase/init'
 import parseFirebaseError from '../../firebase/firebaseErrorParser';
 import { redirect } from 'next/navigation'
 import { useRouter } from 'next/router';
+import { createDummyUsers } from 'scripts/dummy_users';
 
 export function LoginForm(props: PaperProps) {
 
@@ -41,9 +42,9 @@ export function LoginForm(props: PaperProps) {
       <div className="d-flex justify-content-center">
         <Avatar src={'/img/panda.png'} className='d-block' size='xl'/>
       </div>
-      <div className="text-center mb-4">
-        <h3 className="h4 m-0 p-0">Welcome to TravelBuddy</h3>
-        <small className="text-muted">Get started with TravelBuddy and enjoy your next holiday with new friends</small>
+      <div className="text-center mb-4 pt-2">
+        <Title order={2} >Welcome to TravelBuddy</Title>
+        <Text color='dimmed'>Get started with TravelBuddy and enjoy your next holiday with new friends</Text>
       </div>
       <form >
         <Stack mt='lg'>
@@ -74,6 +75,9 @@ export function LoginForm(props: PaperProps) {
             {`Don't have an account yet? Create one.`}
           </Text>
         </Link>
+        <div className="col-lg-12">
+            <Button leftIcon={<IconLock size='18' />} className='w-100' onClick={createDummyUsers}>Create Dummy Users</Button>
+          </div>
       </form>
       
     </div>
