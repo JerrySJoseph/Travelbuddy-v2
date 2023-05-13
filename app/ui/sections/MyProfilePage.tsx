@@ -5,6 +5,9 @@ import Applayout from 'ui/Layout/AppLayout/Applayout'
 
 const MyProfilePage = () => {
     const { userProfile } = useUserProfile()
+
+    if(!userProfile)
+        return <>NO User logged in</>
     
     return (
         <Applayout isFluid={false}>
