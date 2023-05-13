@@ -1,6 +1,6 @@
 import { collection, doc, getDoc, getDocs, getFirestore, limit, query, updateDoc, where } from 'firebase/firestore';
 import { app } from '../../firebase/init';
-import { ShortProfile, UserProfile } from '../models/user';
+import { ShortProfile, UserProfile, UserProfileOverride } from '../models/user';
 import { getAuth } from 'firebase/auth';
 import { update } from 'firebase/database';
 
@@ -58,3 +58,14 @@ export const saveBio = async (bio: string) => {
         bio
     })
 }
+
+export const updateProfile = async (newProfile: UserProfileOverride) => {
+    const { currentUser } = getAuth()
+    if (!currentUser)
+        throw new Error('No user logged in.')
+    const firestore = getFirestore(app)
+    const profileDoc = doc(firestore, 'profiles', currentUser?.uid)
+    await updateDoc(profileDoc, {...newProfile})
+}
+
+export const updateAvatar = async ()
