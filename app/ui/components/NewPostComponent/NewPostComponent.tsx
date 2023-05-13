@@ -1,10 +1,10 @@
 import { Avatar, Button, Textarea } from '@mantine/core'
 import { IconCamera, IconCaravan, IconPlus, IconSend, IconVideo } from '@tabler/icons'
-import { useAuth } from 'data/hooks/useAuth'
+import { useUserProfile } from 'data/hooks/useUserProfile'
 import React from 'react'
 
 const NewPostComponent = () => {
-    const {userProfile}=useAuth()
+    const {userProfile}=useUserProfile()
     return (
         <div className="card p-3 rounded-4">
             <div className="d-flex">

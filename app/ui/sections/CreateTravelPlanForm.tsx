@@ -13,7 +13,7 @@ import {
 import { DatePicker } from '@mantine/dates';
 import { IconAlertTriangle, IconArrowLeft, IconArrowRight, IconCalendar, IconCar, IconCheck, IconEye, IconEyeOff, IconHeart, IconSend, IconTools, IconUsers, IconWorld } from '@tabler/icons';
 import { getAllUserProfiles, getUserProfileWithId, getUserProfileWithName } from 'data/api/profile';
-import { useAuth } from 'data/hooks/useAuth';
+import { useUserProfile } from 'data/hooks/useUserProfile';
 import { Destination, TravelGroup, TravelPlan, TravelPlanOverride, UserProfile } from 'data/models/user';
 import { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
@@ -43,7 +43,7 @@ export function CreateTravelPlanForm(props: PaperProps) {
     const [summary, setSummary] = useState<string>('');
     const [dates, setDates] = useState<[Date | null, Date | null]>([new Date(new Date().getTime() + 86400000), new Date(new Date().getTime() + (5 * 86400000))]);
     const [loading, setLoading] = useState<boolean>(false)
-    const { user, userProfile } = useAuth()
+    const { userProfile } = useUserProfile()
     const [error, setError] = useState<string>('')
 
     useEffect(() => {

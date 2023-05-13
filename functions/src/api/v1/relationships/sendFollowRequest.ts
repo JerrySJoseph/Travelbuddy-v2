@@ -19,6 +19,9 @@ export const sendFollowRequest = functions.https.onCall(async (data, context) =>
         if (!recipientId)
             throw new ApiError(400, 'Bad request')
 
+        if(context.auth.uid === recipientId)
+            throw new ApiError(400,'Bad request')
+
         const followRequestId = uuid()
         const firestoreDB = getFirestore();
 

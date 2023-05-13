@@ -4,7 +4,6 @@ import { Alert, Avatar, Button, Divider, Modal, Paper, Skeleton, ThemeIcon, Titl
 import { IconAlertCircle, IconCheck, IconPlaneArrival, IconPlaneDeparture, IconX } from '@tabler/icons';
 import { acceptOrRejectTravelPlanInvite, getTravelPlan } from 'data/api/travelplan';
 import { useAppContext } from 'data/context/app-context';
-import { useAuth } from 'data/hooks/useAuth';
 import { useTravelPlanInvites } from 'data/hooks/useTravelPlanInvites';
 import { TravelPlan, TravelPlanInvite } from 'data/models/user';
 import { useRouter } from 'next/router';

@@ -1,15 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { createContext, FC, useEffect, useState } from "react";
-import { User, getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth'
-import { useRouter } from "next/router";
-import LoadingFragment from "../../ui/sections/Loading";
 import { LoadingOverlay } from "@mantine/core";
-import { app } from '../../firebase/init'
 import { UserProfile } from "data/models/user";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from 'firebase/auth';
+import { useRouter } from "next/router";
+import { createContext, FC, useEffect, useState } from "react";
+import { addOnDocumentChangeListener } from "Utils/firestoreListeners";
+import { app } from '../../firebase/init';
 import { getUserProfileWithId } from "data/api/profile";
 
 type AuthContextProps = {
-    user?: User,
     userProfile?: UserProfile,
     isAuthenticated?: boolean,
     loading: boolean,
@@ -18,7 +17,6 @@ type AuthContextProps = {
 }
 
 export const AuthContext = createContext<AuthContextProps>({
-    user: undefined,
     userProfile: undefined,
     isAuthenticated: false,
     loading: false,
@@ -29,31 +27,50 @@ export const AuthContext = createContext<AuthContextProps>({
 export const AuthContextProvider: FC<any> = (props) => {
 
     const { push } = useRouter();
-    const [user, setUser] = useState<User>();
     const [loading, setLoading] = useState<boolean>(true);
-    const [userProfile, setUserProfile] = useState<UserProfile>()
-
+    const [userProfile, setUserProfile] = useState<UserProfile|undefined>()
+    const [user, setUser] = useState<User | null>()
 
     useEffect(() => {
-
-        const unsubscribe = onAuthStateChanged(getAuth(app), async (newUser) => {
-            setLoading(true);
-            setUser(newUser ? newUser : undefined);
-            if (newUser) {
-                const profile = await getUserProfileWithId(newUser.uid)
-                setUserProfile(profile)
-            }
-            if (!newUser)
-                push('/login');
-
-            setLoading(false);
-        })
-
-        return () => unsubscribe();
+        const unsubscribe = onAuthStateChanged(getAuth(app), setUser)
+        return unsubscribe
     }, [])
 
+    // async function fetchData(){
+    //     setLoading(true)
+    //     user && setUserProfile(await getUserProfileWithId(user.uid))
+    //     setLoading(false)
+    // }
+
+    useEffect(()=>{
+        if(user===undefined){
+            setLoading(true)
+            return
+        }
+        else if(!user){
+            setLoading(true)
+            push('/login')
+            setUserProfile(undefined)
+            setLoading(false)
+            return
+        }
+        else{
+            setLoading(true)
+            push('/app/dashboard')
+            const unsubscribeProfileChangeListener=addOnDocumentChangeListener<UserProfile>('profiles',user.uid,(newUserProfile)=>{   
+                       
+                setUserProfile(newUserProfile)
+                setLoading(false)
+            })
+            return unsubscribeProfileChangeListener
+        }
+    },[user])
+
+    
+
+
+
     const value: AuthContextProps = {
-        user,
         loading,
         userProfile,
         isAuthenticated: user !== null,

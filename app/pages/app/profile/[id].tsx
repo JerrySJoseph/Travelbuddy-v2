@@ -1,23 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import NewPostComponent from '@components/NewPostComponent/NewPostComponent';
 import ProfileCard from '@components/ProfileCard/ProfileCard';
 import { Skeleton } from '@mantine/core';
 import { getUserProfileWithId } from 'data/api/profile';
 import { useAppContext } from 'data/context/app-context';
+import { getAuth } from 'firebase/auth';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Applayout from 'ui/Layout/AppLayout/Applayout';
 import { UserProfile } from '../../../data/models/user';
-import NewPostComponent from '@components/NewPostComponent/NewPostComponent';
-import { useAuth } from 'data/hooks/useAuth';
+import { useUserProfile } from 'data/hooks/useUserProfile';
+import MyProfilePage from 'ui/sections/MyProfilePage';
+import UserProfilePage from 'ui/sections/UserProfilePage';
 
 
 const ProfilePage = () => {
 
     const { id } = useRouter().query;
     const { setError } = useAppContext()
-    const { user } = useAuth();
+    const { userProfile } = useUserProfile()
     const [profile, setProfile] = useState<UserProfile>()
-    const [loading, setLoading] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(true)
 
 
     useEffect(() => {
@@ -54,20 +57,11 @@ const ProfilePage = () => {
     if (!profile)
         return <>NO such user profile</>
 
-    return (
-        <Applayout isFluid={false}>
-            <div className="row">
-                <div className="col-lg-3">
-                    <ProfileCard profile={profile} showFollowButton={user?.uid !== id || false} />
-                </div>
-                <div className="col-lg-6">
-                    <NewPostComponent />
-                </div>
-                <div className="col-lg-3">
+    if(userProfile && userProfile.id===id)
+        return <MyProfilePage/>
 
-                </div>
-            </div>
-        </Applayout>
+    return (
+        <UserProfilePage profile={profile}/>
     )
 }
 

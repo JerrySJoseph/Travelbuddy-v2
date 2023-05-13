@@ -40,9 +40,7 @@ export default function App(props: AppProps) {
           }}
         >
           <AppContextProvider>
-            <AuthContextProvider>
-              <Component {...pageProps} />
-            </AuthContextProvider>
+            <Component {...pageProps} />
           </AppContextProvider>
 
         </MantineProvider>

@@ -1,13 +1,9 @@
 import TravelPlanComponent from '@components/TravelPlanComponent/TravelPlanComponents';
-import { Button, Card, Modal, Notification as NotificationComponent, ThemeIcon, Title, useMantineTheme } from '@mantine/core';
-import { IconLocation, IconPlaneDeparture, IconUser, IconUserCircle, IconUsers } from '@tabler/icons';
+import { Button, Modal, ThemeIcon, Title, useMantineTheme } from '@mantine/core';
+import { IconLocation, IconPlaneDeparture, IconUserCircle, IconUsers } from '@tabler/icons';
 import { getPublicTravelPlans } from 'data/api/travelplan';
-import { useAuth } from 'data/hooks/useAuth'
-import { useNotifications } from 'data/hooks/useNotifications';
-import { Notification, TravelPlan } from 'data/models/user';
-import { getAuth, signOut } from 'firebase/auth'
-import React, { useEffect, useState } from 'react'
-import { Car } from 'tabler-icons-react';
+import { TravelPlan } from 'data/models/user';
+import { useEffect, useState } from 'react';
 import Applayout from 'ui/Layout/AppLayout/Applayout';
 import { CreateTravelPlanForm } from 'ui/sections/CreateTravelPlanForm';
 

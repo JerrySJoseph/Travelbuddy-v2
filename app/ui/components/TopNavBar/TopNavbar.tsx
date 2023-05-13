@@ -1,10 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 import SearchComponent from "@components/SearchComponent/SearchComponent"
-import { ActionIcon, Avatar, Button, Divider, Indicator, Loader, Menu, Skeleton, ThemeIcon, useMantineTheme } from "@mantine/core"
-import { IconBell, IconCar, IconCheck, IconDashboard, IconPower, IconUserPlus } from "@tabler/icons"
+import { ActionIcon, Avatar, Button, Divider, Indicator, Menu, Skeleton, ThemeIcon, useMantineTheme } from "@mantine/core"
+import { IconBell, IconCar, IconCheck, IconDashboard, IconPower, IconUserPlus, IconUsers } from "@tabler/icons"
 import { acceptFollowRequest, rejectFollowRequest } from "data/api/relationships"
 import { useAppContext } from "data/context/app-context"
-import { useAuth } from "data/hooks/useAuth"
+import { useUserProfile } from "data/hooks/useUserProfile"
 import { useFollowRequests } from "data/hooks/useFollowRequests"
 import { useNotifications } from "data/hooks/useNotifications"
 import { FollowRequest } from "data/models/user"
@@ -18,7 +18,6 @@ export interface ITopNavBarProps {
 
 const TopNavbar = ({ isFluid }: ITopNavBarProps) => {
 
-    const { user } = useAuth()
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
@@ -30,8 +29,11 @@ const TopNavbar = ({ isFluid }: ITopNavBarProps) => {
                     <SearchComponent />
                 </div>
                 <div className="col-lg-3 d-flex justify-content-end">
-                    <InvitationsMenu className='me-3' />
-                    <NotificationMenu className='me-3' />
+                    <InvitationsMenu className='me-2' />
+                    <ActionIcon variant="subtle" className='me-2' >
+                        <IconUsers size="1.2rem" />
+                    </ActionIcon>
+                    <NotificationMenu className='me-4' />
                     <UserControlMenu />
                 </div>
             </div>
@@ -46,7 +48,6 @@ export default TopNavbar
 
 export function NotificationMenu({ ...props }) {
     const theme = useMantineTheme();
-    const { user } = useAuth()
 
 
     const { notifications, loading, error } = useNotifications()
@@ -102,7 +103,7 @@ export function NotificationMenu({ ...props }) {
 
 export function UserControlMenu() {
     const theme = useMantineTheme();
-    const { user, logout, userProfile } = useAuth()
+    const { logout, userProfile } = useUserProfile()
     const { push } = useRouter()
     return (
         <Menu
@@ -112,17 +113,17 @@ export function UserControlMenu() {
         >
             <Menu.Target>
                 <ActionIcon variant="transparent">
-                    <Avatar src={user?.photoURL} size='sm' />
+                    <Avatar src={userProfile?.avatar} size='sm' />
                 </ActionIcon>
 
             </Menu.Target>
             <Menu.Dropdown>
                 <Menu.Item>
-                    <div className="d-flex align-items-center" onClick={() => push('/app/profile/' + user?.uid)}>
-                        <Avatar src={user?.photoURL} size='md' />
+                    <div className="d-flex align-items-center" onClick={() => push('/app/profile/' + userProfile?.id)}>
+                        <Avatar src={userProfile?.avatar} size='md' />
                         <div className="ms-2">
                             <h5 className="h6 m-0 p-0">{`${userProfile?.firstname} ${userProfile?.lastname}`}</h5>
-                            <small className="text-muted">{user?.email}</small>
+                            <small className="text-muted">{userProfile?.email}</small>
                         </div>
                     </div>
                 </Menu.Item>
@@ -152,7 +153,7 @@ export function UserControlMenu() {
 
 export function InvitationsMenu({ ...props }) {
     const theme = useMantineTheme();
-    const { requests} = useFollowRequests()
+    const { requests } = useFollowRequests()
 
 
     return (
@@ -166,7 +167,7 @@ export function InvitationsMenu({ ...props }) {
             <Menu.Target>
                 <Indicator position='top-end' offset={7} size={8} disabled={requests.length == 0}>
                     <ActionIcon variant="subtle">
-                        <IconUserPlus size="1rem" stroke={2.5} />
+                        <IconUserPlus size="1.2rem" stroke={2.5} />
                     </ActionIcon>
                 </Indicator>
             </Menu.Target>

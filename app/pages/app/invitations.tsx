@@ -1,13 +1,11 @@
 import { Button, Modal } from '@mantine/core';
-import { useAuth } from 'data/hooks/useAuth'
-import { getAuth, signOut } from 'firebase/auth'
-import React, { useState } from 'react'
+import { useState } from 'react';
 import Applayout from 'ui/Layout/AppLayout/Applayout';
 import { CreateTravelPlanForm } from 'ui/sections/CreateTravelPlanForm';
 
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  
   const [open, setOpen] = useState<boolean>(false)
   return (
     <Applayout>
