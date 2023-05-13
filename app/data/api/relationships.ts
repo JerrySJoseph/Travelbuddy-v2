@@ -53,6 +53,23 @@ export const rejectFollowRequest = async (followRequest: FollowRequest) => {
 
 }
 
+export const unFollowUser = async (recipientId: string) => {
+
+    try {
+        const user = getAuth().currentUser
+        if (!user) return false
+        const functions = getFunctions(app)
+        const unFollowFn = httpsCallable(functions, 'unFollow');
+        const result = await unFollowFn({ recipientId,ownerId:user.uid })
+        return true
+    } catch (error) {
+        console.log('API ERROR', error)
+        throw error
+    }
+
+}
+
+
 export const checkFollowRequestSent = async (recipientId: string) => {
 
     try {
