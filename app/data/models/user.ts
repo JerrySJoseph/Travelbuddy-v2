@@ -25,6 +25,7 @@ export interface ShortProfile{
 }
 
 export interface UserProfileOverride{
+    username?: string
     id?:string,
     firstname?:string,
     lastname?:string,
@@ -35,8 +36,7 @@ export interface UserProfileOverride{
 }
 
 export interface Like{
-    id:string,
-    owner:UserProfile,
+    ownerId:string,
     datetime:any
 }
 
@@ -189,17 +189,18 @@ export interface Post{
     id:string,
     text?:string,
     ownerId:string,
-    owner:ShortProfile,
     medias?:Media[],
     datetime:any,
-    likes?:Like[]
+    likes?:Like[],
+    likeIndex:string[],
+    likeCount:number,
     dislikes?:Dislike[],
     comment?:UserComment[]
 }
 
 export interface UserComment{
     id:string,
-    owner:ShortProfile,
+    ownerId:string,
     content:string,
     datetime:any
 }
@@ -208,4 +209,15 @@ export interface PostRaw{
     text?:string,
     images?:File[],
     travelPlan?:TravelPlan
+}
+
+export function getShortProfileFromUserProfile(profile:UserProfileOverride):ShortProfile{
+    return {
+        type:'short-profile',
+        id:profile.id || '',
+        firstname:profile.firstname||'',
+        lastname:profile.lastname||'',
+        avatar:profile.avatar||'',
+        username:profile.username||''
+    }
 }

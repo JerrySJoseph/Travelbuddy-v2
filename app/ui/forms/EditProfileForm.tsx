@@ -59,6 +59,7 @@ const EditProfileForm = ({ profile }: IEditProfileForm) => {
             if (file)
                 avatarUrl=await updateAvatar(file)
             await updateProfile({
+                ...profile,
                 avatar:avatarUrl,
                 firstname,
                 lastname,
