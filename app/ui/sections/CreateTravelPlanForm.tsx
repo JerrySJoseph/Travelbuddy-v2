@@ -11,16 +11,14 @@ import {
     ThemeIcon
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
-import { IconAlertTriangle, IconArrowLeft, IconArrowRight, IconCalendar, IconCar, IconCheck, IconEye, IconEyeOff, IconHeart, IconSend, IconTools, IconUsers, IconWorld } from '@tabler/icons';
-import { getAllUserProfiles, getUserProfileWithId, getUserProfileWithName } from 'data/api/profile';
+import { IconAlertTriangle, IconArrowLeft, IconArrowRight, IconCalendar, IconCar, IconCheck, IconEyeOff, IconHeart, IconSend, IconTools, IconUsers, IconWorld } from '@tabler/icons';
+import { getDestinations } from 'data/api/destinations';
+import { getAllUserProfiles, getUserProfileWithName } from 'data/api/profile';
+import { createNewTravelPlan } from 'data/api/travelplan';
 import { useUserProfile } from 'data/hooks/useUserProfile';
-import { Destination, TravelGroup, TravelPlan, TravelPlanOverride, UserProfile } from 'data/models/user';
+import { Destination, TravelGroup, TravelPlan, UserProfile } from 'data/models/user';
 import { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import cities from '../../destinations.json';
-import LoadingFragment from './Loading';
-import { getDestinations } from 'data/api/destinations';
-import { createNewTravelPlan } from 'data/api/travelplan';
 
 
 interface IMultiSelectItem {
@@ -30,8 +28,6 @@ interface IMultiSelectItem {
 }
 
 export function CreateTravelPlanForm(props: PaperProps) {
-
-
 
     const [destinationsList, setDestinationsList] = useState<IMultiSelectItem[]>([])
     const [destinations, setDestinations] = useState<string[]>([])

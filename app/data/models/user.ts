@@ -34,13 +34,13 @@ export interface UserProfileOverride{
     travelPlans?:TravelPlan[]
 }
 
-export interface Likes{
+export interface Like{
     id:string,
     owner:UserProfile,
     datetime:any
 }
 
-export interface Dislikes{
+export interface Dislike{
     id:string,
     owner:UserProfile,
     datetime:any
@@ -174,4 +174,38 @@ export interface FollowRequest{
     recipientId:string
     datetime:any
     status:'PENDING'|'ACCEPTED'|"REJECTED"
+}
+
+
+export type MediaType='Image'|'Video'|'TravelPlan'
+
+export interface Media{
+    mediaType:MediaType,
+    mediaUrl:string,
+    ownerId:string,
+}
+
+export interface Post{
+    id:string,
+    text?:string,
+    ownerId:string,
+    owner:ShortProfile,
+    medias?:Media[],
+    datetime:any,
+    likes?:Like[]
+    dislikes?:Dislike[],
+    comment?:UserComment[]
+}
+
+export interface UserComment{
+    id:string,
+    owner:ShortProfile,
+    content:string,
+    datetime:any
+}
+
+export interface PostRaw{
+    text?:string,
+    images?:File[],
+    travelPlan?:TravelPlan
 }

@@ -26,7 +26,7 @@ export const AuthContext = createContext<AuthContextProps>({
 
 export const AuthContextProvider: FC<any> = (props) => {
 
-    const { push } = useRouter();
+    const { push ,asPath} = useRouter();
     const [loading, setLoading] = useState<boolean>(true);
     const [userProfile, setUserProfile] = useState<UserProfile|undefined>()
     const [user, setUser] = useState<User | null>()
@@ -49,14 +49,16 @@ export const AuthContextProvider: FC<any> = (props) => {
         }
         else if(!user){
             setLoading(true)
-            push('/login')
+            if(asPath.startsWith('/app'))
+                push('/login')
             setUserProfile(undefined)
             setLoading(false)
             return
         }
         else{
             setLoading(true)
-            push('/app/dashboard')
+            if(asPath.startsWith('/login') || asPath.startsWith('/register'))
+                push('/app/dashboard')
             const unsubscribeProfileChangeListener=addOnDocumentChangeListener<UserProfile>('profiles',user.uid,(newUserProfile)=>{   
                        
                 setUserProfile(newUserProfile)

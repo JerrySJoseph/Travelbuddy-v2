@@ -8,10 +8,11 @@ import { getAuth } from 'firebase/auth';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Applayout from 'ui/Layout/AppLayout/Applayout';
-import { UserProfile } from '../../../data/models/user';
+import { Post, UserProfile } from '../../../data/models/user';
 import { useUserProfile } from 'data/hooks/useUserProfile';
 import MyProfilePage from 'ui/sections/MyProfilePage';
 import UserProfilePage from 'ui/sections/UserProfilePage';
+import { getAllPosts } from 'data/api/post';
 
 
 const ProfilePage = () => {
@@ -20,6 +21,7 @@ const ProfilePage = () => {
     const { setError } = useAppContext()
     const { userProfile } = useUserProfile()
     const [profile, setProfile] = useState<UserProfile>()
+    const [myposts,setMyPosts]=useState<Post[]>([])
     const [loading, setLoading] = useState<boolean>(true)
 
 
@@ -32,7 +34,9 @@ const ProfilePage = () => {
         try {
             setLoading(true)
             setProfile(await getUserProfileWithId(id))
+            setMyPosts(await getAllPosts(id))
         } catch (error) {
+            console.error(error)
             setError(error as Error)
         } finally {
             setLoading(false)
@@ -58,10 +62,10 @@ const ProfilePage = () => {
         return <>NO such user profile</>
 
     if(userProfile && userProfile.id===id)
-        return <MyProfilePage/>
+        return <MyProfilePage posts={myposts}/>
 
     return (
-        <UserProfilePage profile={profile}/>
+        <UserProfilePage profile={profile} posts={myposts}/>
     )
 }
 

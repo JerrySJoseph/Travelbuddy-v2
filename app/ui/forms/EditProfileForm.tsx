@@ -1,11 +1,10 @@
-import { Textarea, Button, TextInput, Avatar, FileInput, FileButton, Divider, Group, Alert } from '@mantine/core'
-import { saveBio, updateProfile } from 'data/api/profile'
-import { useModal } from 'data/context/modal-context'
-import React, { useEffect, useState } from 'react'
-import { bioValidator } from '../../Utils/validators/bioValidator'
-import { UserProfile } from 'data/models/user'
+import { Avatar, Button, Divider, FileButton, TextInput } from '@mantine/core'
 import { IconUpload, IconX } from '@tabler/icons'
+import { updateAvatar, updateProfile } from 'data/api/profile'
 import { useAppContext } from 'data/context/app-context'
+import { useModal } from 'data/context/modal-context'
+import { UserProfile } from 'data/models/user'
+import { useState } from 'react'
 
 interface IEditProfileForm {
     profile: UserProfile
@@ -25,10 +24,10 @@ const EditProfileForm = ({ profile }: IEditProfileForm) => {
 
     const [loading, setLoading] = useState<boolean>(false)
     const [imageLoading, setImageLoading] = useState<boolean>(false)
-    
+
 
     const { closeModal } = useModal()
-    const {setError,setSuccess}=useAppContext()
+    const { setError, setSuccess } = useAppContext()
 
 
     function validateFields() {
@@ -56,14 +55,17 @@ const EditProfileForm = ({ profile }: IEditProfileForm) => {
             setLoading(true)
             if (!validateFields())
                 return
-
+            let avatarUrl=profile.avatar
+            if (file)
+                avatarUrl=await updateAvatar(file)
             await updateProfile({
+                avatar:avatarUrl,
                 firstname,
                 lastname,
                 email
             })
             setSuccess('Profile updated successfully')
-            closeModal()
+            //closeModal()
 
         } catch (error) {
             setError(error as Error)
@@ -76,13 +78,14 @@ const EditProfileForm = ({ profile }: IEditProfileForm) => {
         console.log('image changed')
         setImageLoading(true)
         setAvatar(URL.createObjectURL(f))
+        setFile(f);
         setImageLoading(false)
     }
 
 
     return (
         <div className="row">
-            
+
             <div className="col-12">
                 <div className="d-flex w-100 justify-content-center">
                     <Avatar src={avatar} size='xl' radius='xl' />
@@ -91,7 +94,7 @@ const EditProfileForm = ({ profile }: IEditProfileForm) => {
                     <FileButton onChange={handleImageChange} accept="image/*">
                         {(props) => <Button {...props} loading={imageLoading} compact leftIcon={<IconUpload size={15} />}>Upload Image</Button>}
                     </FileButton>
-                    <Button compact color='yellow' variant='outline' leftIcon={<IconX size={15} />} ml='lg' onClick={() => { setAvatar(profile.avatar) }}>Remove image</Button>
+                    
                 </div>
                 <Divider my='md' />
             </div>
@@ -132,7 +135,7 @@ const EditProfileForm = ({ profile }: IEditProfileForm) => {
                     required
                     type='text' />
             </div>
-            
+
             <div className="col-12">
                 <Divider my='lg' />
             </div>

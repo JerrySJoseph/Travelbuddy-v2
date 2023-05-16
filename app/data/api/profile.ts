@@ -2,7 +2,7 @@ import { collection, doc, getDoc, getDocs, getFirestore, limit, query, updateDoc
 import { app } from '../../firebase/init';
 import { ShortProfile, UserProfile, UserProfileOverride } from '../models/user';
 import { getAuth } from 'firebase/auth';
-import { update } from 'firebase/database';
+import {getDownloadURL, getStorage, ref, uploadBytes} from 'firebase/storage'
 
 export const getAllUserProfiles = async () => {
     const firestore = getFirestore(app)
@@ -68,4 +68,22 @@ export const updateProfile = async (newProfile: UserProfileOverride) => {
     await updateDoc(profileDoc, {...newProfile})
 }
 
-export const updateAvatar = async ()
+export const updateAvatar = async (file:File)=>{
+    const { currentUser } = getAuth()
+    if (!currentUser)
+        throw new Error('No user logged in.')
+    const storage=getStorage()
+    const fileExtension=file.name.split('.')[1]
+    const storagePath='assets/users/'+currentUser.uid+'/avatar/avatar.'+fileExtension
+    await uploadBytes(ref(storage,storagePath),file);
+    const downloadUrl=await getDownloadURL(ref(storage,storagePath))
+    return downloadUrl
+}
+
+
+export async function getShortProfile(userId?:string){
+    const _userid=userId || getAuth().currentUser?.uid
+    if(!_userid)
+        throw new Error('No such user found')
+    return ((await getDoc(doc(getFirestore(app),'short-profiles',_userid))).data() as ShortProfile)
+}

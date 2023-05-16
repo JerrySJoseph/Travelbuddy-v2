@@ -32,15 +32,15 @@ export interface UserProfileOverride{
     travelPlans?:TravelPlan[]
 }
 
-export interface Likes{
+export interface Like{
     id:string,
-    owner:UserProfile,
+    owner:ShortProfile,
     datetime:any
 }
 
-export interface Dislikes{
+export interface Dislike{
     id:string,
-    owner:UserProfile,
+    owner:ShortProfile,
     datetime:any
 }
 
@@ -174,5 +174,32 @@ export interface Relationship{
     followedId:string,
     follower:ShortProfile,
     followed:ShortProfile
+    datetime:any
+}
+
+export type MediaType='Image'|'Video'|'TravelPlan'
+
+export interface Media{
+    mediaType:MediaType,
+    mediaUrl:string,
+    ownerId:string,
+}
+
+export interface Post{
+    id:string,
+    text:string,
+    ownerId:string,
+    owner:ShortProfile,
+    medias:Media[],
+    datetime:any,
+    likes:Like[]
+    dislikes:Dislike[],
+    comment:UserComment[]
+}
+
+export interface UserComment{
+    id:string,
+    owner:ShortProfile,
+    content:string,
     datetime:any
 }

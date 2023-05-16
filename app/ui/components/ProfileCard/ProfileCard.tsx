@@ -92,9 +92,8 @@ const ProfileCard = ({ profile, showFollowButton = false }: IProfileCardProps) =
         <Card shadow='md' p={0}>
 
             <div className="d-flex justify-content-center align-items-center pt-4">
-                <Avatar src={profile.avatar} size='xl' />
+                <Avatar src={profile.avatar} size='xl' radius='xl' />
             </div>
-
 
             <div className="text-center">
                 <h5 className="h4 m-0 p-0 text-capitalize d-block">{profile.firstname} {profile.lastname}</h5>

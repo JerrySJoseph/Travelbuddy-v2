@@ -1,11 +1,13 @@
 import NewPostComponent from '@components/NewPostComponent/NewPostComponent'
+
 import ProfileCard from '@components/ProfileCard/ProfileCard'
-import { UserProfile } from 'data/models/user'
+import { Post, UserProfile } from 'data/models/user'
 import React from 'react'
 import Applayout from 'ui/Layout/AppLayout/Applayout'
 
 export interface IUserProfilePage{
-    profile:UserProfile
+    profile:UserProfile,
+    posts:Post[]
 }
 
 const UserProfilePage = ({profile}:IUserProfilePage) => {

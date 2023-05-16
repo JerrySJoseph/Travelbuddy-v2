@@ -2,7 +2,7 @@ import { getAuth } from "firebase/auth"
 import { collection, doc, getDoc, getFirestore, query, where, orderBy, limit, getDocs } from "firebase/firestore"
 import { getFunctions, httpsCallable } from "firebase/functions"
 import { app } from "../../firebase/init"
-import { FollowRequest } from "data/models/user"
+import { FollowRequest, ShortProfile } from "data/models/user"
 import { get, getDatabase, ref } from "firebase/database"
 
 export const sendFollowRequest = async (recipientId: string) => {
@@ -113,4 +113,30 @@ export const getFollowRequestsRecieved = async (max_results: number = 10) => {
         console.log('API ERROR', error)
         throw error
     }
+}
+
+export const getFollowers=async ()=>{
+    const user = getAuth().currentUser
+    if (!user) return []
+
+    const firestore=getFirestore()
+    const followers:ShortProfile[]=[]
+    const querySnapshot=await getDocs(collection(firestore,`profiles/${user.uid}/followers`))
+    querySnapshot.forEach(doc=>{
+        followers.push(doc.data() as ShortProfile)
+    })
+    return followers;
+}
+
+export const getFollowing=async ()=>{
+    const user = getAuth().currentUser
+    if (!user) return []
+
+    const firestore=getFirestore()
+    const followers:ShortProfile[]=[]
+    const querySnapshot=await getDocs(collection(firestore,`profiles/${user.uid}/following`))
+    querySnapshot.forEach(doc=>{
+        followers.push(doc.data() as ShortProfile)
+    })
+    return followers;
 }

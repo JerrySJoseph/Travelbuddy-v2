@@ -59,3 +59,17 @@ a {
 width: 128px;
 height: 128px;
 }
+
+.overlay-continer{
+  position: relative;
+}
+
+.image-overlay{
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.5;
+  background-color: black;
+}

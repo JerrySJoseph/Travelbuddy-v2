@@ -1,9 +1,16 @@
 import NewPostComponent from '@components/NewPostComponent/NewPostComponent'
+import PostItem from '@components/PostItem/PostItem'
 import ProfileCard from '@components/ProfileCard/ProfileCard'
 import { useUserProfile } from 'data/hooks/useUserProfile'
+import { Post } from 'data/models/user'
 import Applayout from 'ui/Layout/AppLayout/Applayout'
 
-const MyProfilePage = () => {
+
+export interface IUserProfilePage{
+    posts:Post[]
+}
+
+const MyProfilePage = ({posts}:IUserProfilePage) => {
     const { userProfile } = useUserProfile()
 
     if(!userProfile)
@@ -17,6 +24,9 @@ const MyProfilePage = () => {
                 </div>
                 <div className="col-lg-6">
                     <NewPostComponent />
+                    {
+                        posts.map(pi=><PostItem key={pi.id} post={pi}/>)
+                    }
                 </div>
                 <div className="col-lg-3">
 

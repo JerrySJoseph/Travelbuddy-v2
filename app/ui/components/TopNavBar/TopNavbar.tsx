@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import SearchComponent from "@components/SearchComponent/SearchComponent"
 import { ActionIcon, Avatar, Button, Divider, Indicator, Menu, Skeleton, ThemeIcon, useMantineTheme } from "@mantine/core"
-import { IconBell, IconCar, IconCheck, IconDashboard, IconPower, IconUserPlus, IconUsers } from "@tabler/icons"
+import { IconBell, IconCar, IconCheck, IconDashboard, IconMessage, IconPower, IconUserPlus, IconUsers } from "@tabler/icons"
 import { acceptFollowRequest, rejectFollowRequest } from "data/api/relationships"
 import { useAppContext } from "data/context/app-context"
 import { useUserProfile } from "data/hooks/useUserProfile"
@@ -23,7 +23,7 @@ const TopNavbar = ({ isFluid }: ITopNavBarProps) => {
         <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
             <div className={`container${isFluid ? '-fluid' : ''}`}>
                 <div className="col-lg-3">
-                    <Avatar src={'/img/panda.png'} size='md' />
+                    <Avatar src={'/img/panda.png'} size='md' radius='xl'/>
                 </div>
                 <div className="col-lg-6">
                     <SearchComponent />
@@ -32,6 +32,9 @@ const TopNavbar = ({ isFluid }: ITopNavBarProps) => {
                     <InvitationsMenu className='me-2' />
                     <ActionIcon variant="subtle" className='me-2' >
                         <IconUsers size="1.2rem" />
+                    </ActionIcon>
+                    <ActionIcon variant="subtle" className='me-2'  >
+                        <IconMessage size="1.2rem" />
                     </ActionIcon>
                     <NotificationMenu className='me-4' />
                     <UserControlMenu />
@@ -113,14 +116,14 @@ export function UserControlMenu() {
         >
             <Menu.Target>
                 <ActionIcon variant="transparent">
-                    <Avatar src={userProfile?.avatar} size='sm' />
+                    <Avatar src={userProfile?.avatar} size='sm' radius='xl' />
                 </ActionIcon>
 
             </Menu.Target>
             <Menu.Dropdown>
                 <Menu.Item>
                     <div className="d-flex align-items-center" onClick={() => push('/app/profile/' + userProfile?.id)}>
-                        <Avatar src={userProfile?.avatar} size='md' />
+                        <Avatar src={userProfile?.avatar} size='md' radius='xl'/>
                         <div className="ms-2">
                             <h5 className="h6 m-0 p-0">{`${userProfile?.firstname} ${userProfile?.lastname}`}</h5>
                             <small className="text-muted">{userProfile?.email}</small>
@@ -187,7 +190,7 @@ export function InvitationsMenu({ ...props }) {
                 {
                     requests.map((n, i) => (<>
                         <Menu.Item key={n.id}
-                            icon={<Avatar src={n.owner.avatar} />}>
+                            icon={<Avatar src={n.owner.avatar}  radius='xl'/>}>
                             <p className="fw-bold m-0 mb-1 p-0">Follow request recieved</p>
                             <p>{n.owner.firstname} {n.owner.lastname} has requested to follow you.</p>
                             <div className="d-flex">

@@ -1,11 +1,11 @@
+import { getAuth } from 'firebase-admin/auth'
+import { getFirestore } from 'firebase-admin/firestore'
 import * as functions from 'firebase-functions'
-import {getAuth} from 'firebase-admin/auth'
-import {getFirestore} from 'firebase-admin/firestore'
-import { ShortProfile, UserProfile } from '../../../models/user'
 import { HttpsError } from 'firebase-functions/v1/auth'
-import { checkNameExists, checkUserNameExists } from '../../../utils/checkExists'
-import { ApiError } from '../../../utils/ApiError'
 import { URL_DEFAULT_AVATAR } from '../../../Constants'
+import { ShortProfile, UserProfile } from '../../../models/user'
+import { ApiError } from '../../../utils/ApiError'
+import { checkNameExists, checkUserNameExists } from '../../../utils/checkExists'
 
 export const createNewUser=functions.https.onCall(async(data,context)=>{
     
@@ -18,7 +18,7 @@ export const createNewUser=functions.https.onCall(async(data,context)=>{
         firstname=(firstname as String).toLowerCase()
         lastname=(lastname as String).toLowerCase()
         username=(username as String).toLowerCase()
-        
+
         await checkUserNameExists(username);
         await checkNameExists(firstname,lastname)
 
@@ -27,7 +27,7 @@ export const createNewUser=functions.https.onCall(async(data,context)=>{
             emailVerified:false,
             password,
             displayName:`${firstname} ${lastname}`,
-            photoURL: URL_DEFAULT_AVATAR,
+            photoURL:URL_DEFAULT_AVATAR,
             disabled:false
         })
         
@@ -53,6 +53,8 @@ export const createNewUser=functions.https.onCall(async(data,context)=>{
             username,
             avatar: URL_DEFAULT_AVATAR
         }
+
+        
 
         await Promise.all([
             getFirestore().collection('profiles').doc(userRecord.uid).set(userProfile),
