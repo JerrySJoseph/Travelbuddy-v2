@@ -27,7 +27,10 @@ interface IMultiSelectItem {
     object: Destination
 }
 
-export function CreateTravelPlanForm(props: PaperProps) {
+interface CreateTravelPlanProps{
+    onSave:(travelPlan:TravelPlan)=>any
+}
+export function CreateTravelPlanForm({onSave=()=>{}}: CreateTravelPlanProps) {
 
     const [destinationsList, setDestinationsList] = useState<IMultiSelectItem[]>([])
     const [destinations, setDestinations] = useState<string[]>([])
@@ -96,7 +99,6 @@ export function CreateTravelPlanForm(props: PaperProps) {
     async function handleCreateTravelPlan() {
         try {
             setLoading(true)
-            nextStep()
             const friendProfiles: UserProfile[] = await getFriendProfiles(friends)
             const destinationObjects: Destination[] = _getDestinations(destinations)
 
@@ -123,7 +125,7 @@ export function CreateTravelPlanForm(props: PaperProps) {
                 summary,
                 type: 'travel-plan'
             }
-            await createNewTravelPlan(travelPlan)
+            onSave(travelPlan)
             setLoading(false)
         } catch (error) {
             setError((error as Error).message)
@@ -136,7 +138,7 @@ export function CreateTravelPlanForm(props: PaperProps) {
 
 
     return (
-        <div className="" {...props}>
+        <div className="">
             <Stepper active={active} onStepClick={setActive} breakpoint="sm">
                 <Stepper.Step
                     icon={<IconCar size='1.5rem' />}
@@ -253,39 +255,6 @@ export function CreateTravelPlanForm(props: PaperProps) {
                     </div>
                 </Stepper.Step>
 
-                <Stepper.Completed>
-                    {
-                        (!loading && error) &&
-                        <div className="text-center mb-4">
-                            <ThemeIcon size='lg' color='red'>
-                                <IconAlertTriangle />
-                            </ThemeIcon>
-                            <h3 className="h5 m-0 p-0">Error Occured</h3>
-                            <small className="text-muted">We were not able to create this travel plan for you. Error Help: {error}</small>
-                        </div>
-                    }
-                    {
-                        (!loading && !error) &&
-                        <div className="text-center mb-4">
-                            <ThemeIcon size='lg'>
-                                <IconCheck />
-                            </ThemeIcon>
-                            <h3 className="h5 m-0 p-0">Travel Plan Created</h3>
-                            <small className="text-muted">We have created this travel plan for you. Enjoy your trip</small>
-                        </div>
-                    }
-                    {
-                        (loading) &&
-                        <div className="text-center mb-4">
-                            <ThemeIcon size='lg'>
-                                <IconTools size='1.5rem' />
-                            </ThemeIcon>
-                            <h3 className="h5 m-0 p-0">Please wait!</h3>
-                            <small className="text-muted">Give us a moment to set things up. Please wait while we create your Travel plan</small>
-                        </div>
-                    }
-
-                </Stepper.Completed>
             </Stepper>
 
 

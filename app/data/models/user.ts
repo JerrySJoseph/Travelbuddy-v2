@@ -190,6 +190,7 @@ export interface Post{
     text?:string,
     ownerId:string,
     medias?:Media[],
+    travelPlan?:TravelPlan
     datetime:any,
     likes?:Like[],
     likeIndex:string[],

@@ -35,7 +35,7 @@ export const addPost = async (post: PostRaw, progressCallback: UploadProgressCal
             text: post.text,
             likeIndex:[],
             likeCount:0,
-
+            travelPlan:post.travelPlan
         }
 
         const firestore = getFirestore();

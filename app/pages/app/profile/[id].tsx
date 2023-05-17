@@ -21,7 +21,7 @@ const ProfilePage = () => {
     const { setError } = useAppContext()
     const { userProfile } = useUserProfile()
     const [profile, setProfile] = useState<UserProfile>()
-    const [myposts,setMyPosts]=useState<Post[]>([])
+    const [myposts, setMyPosts] = useState<Post[]>([])
     const [loading, setLoading] = useState<boolean>(true)
 
 
@@ -44,7 +44,7 @@ const ProfilePage = () => {
     }
 
     if (loading)
-        return <Applayout isFluid>
+        return <Applayout>
             <div className="row">
                 <div className="col-lg-3">
                     <Skeleton radius='xl' />
@@ -61,11 +61,15 @@ const ProfilePage = () => {
     if (!profile)
         return <>NO such user profile</>
 
-    if(userProfile && userProfile.id===id)
-        return <MyProfilePage posts={myposts}/>
+    if (userProfile && userProfile.id === id)
+        return <Applayout>
+            <MyProfilePage posts={myposts} />
+        </Applayout>
 
     return (
-        <UserProfilePage profile={profile} posts={myposts}/>
+        <Applayout>
+            <UserProfilePage profile={profile} posts={myposts} />
+        </Applayout>
     )
 }
 
