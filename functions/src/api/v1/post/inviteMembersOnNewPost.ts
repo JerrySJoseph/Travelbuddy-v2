@@ -4,7 +4,7 @@ import * as functions from 'firebase-functions'
 import { v4 as uuid } from 'uuid'
 import { Post, ShortProfile } from '../../../models/user'
 
-export interface Update {
+interface Update {
     [key: string]: any
 }
 
