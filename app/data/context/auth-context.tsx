@@ -49,7 +49,7 @@ export const AuthContextProvider: FC<any> = (props) => {
         }
         else if(!user){
             setLoading(true)
-            if(asPath.startsWith('/app'))
+            if(!asPath.startsWith('/register'))
                 push('/login')
             setUserProfile(undefined)
             setLoading(false)
