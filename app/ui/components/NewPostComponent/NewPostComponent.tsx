@@ -21,6 +21,13 @@ const NewPostComponent = ({ ...props }) => {
     const { openModal ,closeModal} = useModal()
 
 
+    function resetFields(){
+        setText(''),
+        setImageFiles([]),
+        setTravelPlan(undefined)
+    }
+
+
     function handleAddTravelPlan() {
         openModal({
             title: 'Add travel Plan to your Post',
@@ -42,6 +49,7 @@ const NewPostComponent = ({ ...props }) => {
         })
         setSuccess('Your new post has been added to your timeline')
         setLoading(false)
+        resetFields();
     }
 
     interface ImageListProps {

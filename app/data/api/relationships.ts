@@ -60,7 +60,7 @@ export const unFollowUser = async (recipientId: string) => {
         if (!user) return false
         const functions = getFunctions(app)
         const unFollowFn = httpsCallable(functions, 'unFollow');
-        const result = await unFollowFn({ recipientId,ownerId:user.uid })
+        const result = await unFollowFn({ recipientId, ownerId: user.uid })
         return true
     } catch (error) {
         console.log('API ERROR', error)
@@ -76,7 +76,7 @@ export const checkFollowRequestSent = async (recipientId: string) => {
         const user = getAuth().currentUser
         if (!user) return false
         const rtdb = getDatabase(app)
-        const docRef = ref(rtdb, 'follow-requests/' + recipientId+'/'+user.uid)
+        const docRef = ref(rtdb, 'follow-requests/' + recipientId + '/' + user.uid)
         const snapshot = await get(docRef)
         return snapshot.exists() && (snapshot.val() as FollowRequest).ownerId === user.uid
 
@@ -93,7 +93,7 @@ export const checkifFollowing = async (recipientId: string) => {
         const user = getAuth().currentUser
         if (!user) return false
         const rtdb = getDatabase(app)
-        const docRef = ref(rtdb, 'relationships/'+user.uid+'/'+recipientId)
+        const docRef = ref(rtdb, 'relationships/' + user.uid + '/' + recipientId)
         const snapshot = await get(docRef)
         return snapshot.exists()
 
@@ -108,34 +108,34 @@ export const getFollowRequestsRecieved = async (max_results: number = 10) => {
     try {
         const user = getAuth().currentUser
         if (!user) return []
-        
+
     } catch (error) {
         console.log('API ERROR', error)
         throw error
     }
 }
 
-export const getFollowers=async ()=>{
-    const user = getAuth().currentUser
+export const getFollowers = async (userId?: string) => {
+    const user = userId || getAuth().currentUser?.uid
     if (!user) return []
 
-    const firestore=getFirestore()
-    const followers:ShortProfile[]=[]
-    const querySnapshot=await getDocs(collection(firestore,`profiles/${user.uid}/followers`))
-    querySnapshot.forEach(doc=>{
+    const firestore = getFirestore()
+    const followers: ShortProfile[] = []
+    const querySnapshot = await getDocs(collection(firestore, `profiles/${user}/followers`))
+    querySnapshot.forEach(doc => {
         followers.push(doc.data() as ShortProfile)
     })
     return followers;
 }
 
-export const getFollowing=async ()=>{
-    const user = getAuth().currentUser
+export const getFollowing = async (userId?: string) => {
+    const user = userId || getAuth().currentUser?.uid
     if (!user) return []
 
-    const firestore=getFirestore()
-    const followers:ShortProfile[]=[]
-    const querySnapshot=await getDocs(collection(firestore,`profiles/${user.uid}/following`))
-    querySnapshot.forEach(doc=>{
+    const firestore = getFirestore()
+    const followers: ShortProfile[] = []
+    const querySnapshot = await getDocs(collection(firestore, `profiles/${user}/following`))
+    querySnapshot.forEach(doc => {
         followers.push(doc.data() as ShortProfile)
     })
     return followers;

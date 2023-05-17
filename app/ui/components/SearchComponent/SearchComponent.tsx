@@ -13,7 +13,7 @@ export interface ItemProps extends SelectItemProps {
     type?: 'destination' | 'user' | 'tags',
     description?: string,
     image?: string,
-    id?:string,
+    id?: string,
     value: string,
 }
 
@@ -27,7 +27,7 @@ const SearchComponent = () => {
     const [data, setData] = useState<ItemProps[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const { setError } = useAppContext()
-    const {push}=useRouter()
+    const { push } = useRouter()
 
     useEffect(() => {
         if (debouncedSearchInput && debouncedSearchInput.length > 0)
@@ -41,12 +41,12 @@ const SearchComponent = () => {
             setLoading(true)
             const userProfiles = await searchUser(debouncedSearchInput, 5);
             setData(userProfiles.map(p => ({
-                value: p.firstname +" "+ p.lastname,
+                value: p.firstname + " " + p.lastname,
                 description: `@${p.username}`,
                 image: p.avatar,
                 title: p.firstname,
-                label: p.firstname+" "+ p.lastname,
-                id:p.id
+                label: p.firstname + " " + p.lastname,
+                id: p.id
             })))
         } catch (error) {
             setError(error as Error)
@@ -58,16 +58,16 @@ const SearchComponent = () => {
     const AutoCompleteItem = forwardRef<HTMLDivElement, ItemProps>(
         ({ description, type, image, title, value, label, ...others }: ItemProps, ref) => {
             return <div ref={ref} {...others}>
-                 <Group noWrap>
-                        <Avatar src={image} />
-                        <div>
-                            <Text className='text-capitalize' m={0}>{label}</Text>
-                            <Text size="xs" color="dimmed">
-                                {description}
-                            </Text>
-                        </div>
-                       
-                    </Group>
+                <Group noWrap>
+                    <Avatar src={image} />
+                    <div>
+                        <Text className='text-capitalize' m={0}>{label}</Text>
+                        <Text size="xs" color="dimmed">
+                            {description}
+                        </Text>
+                    </div>
+
+                </Group>
             </div>
         }
     )
@@ -81,10 +81,10 @@ const SearchComponent = () => {
             radius='lg'
             itemID='1'
             itemComponent={AutoCompleteItem}
-            onItemSubmit={(item)=>push('/app/profile/'+item.id)}
+            onItemSubmit={(item) => push('/app/profile/' + item.id)}
             itemScope={false}
             icon={<IconSearch size={18} />}
-            rightSection={loading && <Loader size={18}/>}
+            rightSection={loading && <Loader size={18} />}
             iconWidth={36}
         />
     )

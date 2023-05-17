@@ -20,7 +20,7 @@ export function LoginForm(props: PaperProps) {
   const [password, setPassword] = useState<string>();
   const [emailError, setEmailError] = useState<string>();
   const [passwordError, setPasswordError] = useState<string>();
-  const router=useRouter()
+  const { push } = useRouter()
 
   async function handleLogin() {
     try {
@@ -28,7 +28,7 @@ export function LoginForm(props: PaperProps) {
         return
       const auth = getAuth(app)
       const user = await signInWithEmailAndPassword(auth, email, password)
-      router.replace('/app/dashboard')
+      push('/app')
     } catch (error) {
       console.error(error)
       setPasswordError(parseFirebaseError(error).message)
@@ -40,7 +40,7 @@ export function LoginForm(props: PaperProps) {
     <div className="" {...props}>
 
       <div className="d-flex justify-content-center">
-        <Avatar src={'/img/panda.png'} className='d-block' size='xl'/>
+        <Avatar src={'/img/panda.png'} className='d-block' size='xl' />
       </div>
       <div className="text-center mb-4 pt-2">
         <Title order={2} >Welcome to TravelBuddy</Title>
@@ -76,10 +76,10 @@ export function LoginForm(props: PaperProps) {
           </Text>
         </Link>
         <div className="col-lg-12">
-            <Button leftIcon={<IconLock size='18' />} className='w-100' onClick={createDummyUsers}>Create Dummy Users</Button>
-          </div>
+          <Button leftIcon={<IconLock size='18' />} className='w-100' onClick={createDummyUsers}>Create Dummy Users</Button>
+        </div>
       </form>
-      
+
     </div>
   );
 }
