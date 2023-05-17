@@ -8,6 +8,8 @@ export interface UserProfile{
     avatar:string,
     travelPlans:TravelPlan[],
     username:string,
+    rating:number,
+    reviews:UserReview[]
     followersCount:number,
     followedCount:number,
     [key:string]:any
@@ -23,6 +25,7 @@ export interface ShortProfile{
 }
 
 export interface UserProfileOverride{
+    username?: string
     id?:string,
     firstname?:string,
     lastname?:string,
@@ -33,14 +36,13 @@ export interface UserProfileOverride{
 }
 
 export interface Like{
-    id:string,
-    owner:ShortProfile,
+    ownerId:string,
     datetime:any
 }
 
 export interface Dislike{
     id:string,
-    owner:ShortProfile,
+    owner:UserProfile,
     datetime:any
 }
 
@@ -51,6 +53,7 @@ export interface Destination{
     city:string,
     country:string,
     attractions:string[],
+    rating:number,
     reviews:UserReview[]
 }
 
@@ -60,7 +63,9 @@ export interface DestinationOverride{
     city?:string,
     country?:string,
     attractions?:string[],
-    reviews?:UserReview[]
+    reviews?:UserReview[],
+    rating?:number,
+    
 }
 
 export interface UserReview{
@@ -88,7 +93,8 @@ export interface TravelGroup{
     name:string,
     createdBy?:UserProfile,
     members:UserProfile[],
-    
+    rating?:number,
+    reviews?:UserReview[]
 }
 
 
@@ -104,6 +110,8 @@ export interface TravelGroupOverride{
         flexibility?:number
     },
     summary?:string
+    rating?:number,
+    reviews?:UserReview[]
 }
 
 export interface TravelPlan{
@@ -120,6 +128,7 @@ export interface TravelPlan{
         flexibility:number
     },
     summary:string,
+    interestedMembers?:UserProfile[]
 }
 
 export interface TravelPlanOverride{
@@ -135,6 +144,7 @@ export interface TravelPlanOverride{
         flexibility?:number
     },
     summary?:string,
+    interestedMembers?:UserProfile[]
 }
 
 export interface Notification{
@@ -143,21 +153,18 @@ export interface Notification{
     notificationType:string,
     title:string,
     content:string,
-    seen:boolean,
     datetime:any
 }
 
 export interface TravelPlanInvite{
     type:'travel-plan-invite',
     id:string,
-    owner:UserProfile,
-    travelPlan:TravelPlan,
+    ownerId:string,
+    travelPlanId:TravelPlan,
     datetime:any,
-    recipient:UserProfile,
-    status:'PENDING'|'ACCEPTED'|'REJECTED',
-    respondDatetime?:any
+    recipientId:UserProfile,
+    status:'PENDING'|'ACCEPTED'|'REJECTED'
 }
-
 
 export interface FollowRequest{
     id:string,
@@ -169,13 +176,6 @@ export interface FollowRequest{
     status:'PENDING'|'ACCEPTED'|"REJECTED"
 }
 
-export interface Relationship{
-    followerId:string,
-    followedId:string,
-    follower:ShortProfile,
-    followed:ShortProfile
-    datetime:any
-}
 
 export type MediaType='Image'|'Video'|'TravelPlan'
 
@@ -187,19 +187,38 @@ export interface Media{
 
 export interface Post{
     id:string,
-    text:string,
+    text?:string,
     ownerId:string,
-    owner:ShortProfile,
-    medias:Media[],
+    medias?:Media[],
+    travelPlan?:TravelPlan
     datetime:any,
-    likes:Like[]
-    dislikes:Dislike[],
-    comment:UserComment[]
+    likes?:Like[],
+    likeIndex:string[],
+    likeCount:number,
+    dislikes?:Dislike[],
+    comment?:UserComment[]
 }
 
 export interface UserComment{
     id:string,
-    owner:ShortProfile,
+    ownerId:string,
     content:string,
     datetime:any
+}
+
+export interface PostRaw{
+    text?:string,
+    images?:File[],
+    travelPlan?:TravelPlan
+}
+
+export function getShortProfileFromUserProfile(profile:UserProfileOverride):ShortProfile{
+    return {
+        type:'short-profile',
+        id:profile.id || '',
+        firstname:profile.firstname||'',
+        lastname:profile.lastname||'',
+        avatar:profile.avatar||'',
+        username:profile.username||''
+    }
 }

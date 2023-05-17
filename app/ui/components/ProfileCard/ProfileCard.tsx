@@ -1,15 +1,14 @@
-import { ActionIcon, Avatar, Button, Card, Divider, Loader, NavLink, Text } from '@mantine/core'
-import { UserProfile } from '../../../data/models/user'
-import { IconCheck, IconLink, IconPencil, IconPlus, IconSquareArrowUp, IconUserCheck, IconUserCircle, IconUserExclamation, IconUserOff, IconUserPlus, IconUserX } from '@tabler/icons'
-import { useAppContext } from 'data/context/app-context'
-import { useEffect, useState } from 'react'
-import { checkFollowRequestSent, checkifFollowing, sendFollowRequest, unFollowUser } from 'data/api/relationships'
-import { useUserProfile } from 'data/hooks/useUserProfile'
-import { useModal } from 'data/context/modal-context'
+import FollowerFollowingList from '@components/FollowerFollowingList/FollowerFollowingList'
 import EditBioForm from '@forms/EditBioForm'
-import { AvatarGroup } from '@mantine/core/lib/Avatar/AvatarGroup/AvatarGroup'
-import FollowersFollowing from 'ui/sections/FollowersFollowing'
 import EditProfileForm from '@forms/EditProfileForm'
+import { Avatar, Button, Card, Divider, Loader, Text } from '@mantine/core'
+import { IconPencil, IconUserCheck, IconUserExclamation, IconUserPlus, IconUserX } from '@tabler/icons'
+import { checkFollowRequestSent, checkifFollowing, sendFollowRequest, unFollowUser } from 'data/api/relationships'
+import { useAppContext } from 'data/context/app-context'
+import { useModal } from 'data/context/modal-context'
+import { useUserProfile } from 'data/hooks/useUserProfile'
+import { useEffect, useState } from 'react'
+import { UserProfile } from '../../../data/models/user'
 
 export interface IProfileCardProps {
     profile: UserProfile,
@@ -77,7 +76,7 @@ const ProfileCard = ({ profile, showFollowButton = false }: IProfileCardProps) =
 
     const handleFollowersFollowingClick = async () => {
         openModal({
-            content: <FollowersFollowing />,            
+           content: <FollowerFollowingList userid={profile.id}/>,            
         })
     }
 

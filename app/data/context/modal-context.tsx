@@ -60,9 +60,12 @@ const ModalContextProvider = ({ children }: IModalContextProviderProps) => {
     return <ModalContext.Provider value={value}>
         {children}
         <Modal opened={isOpen} onClose={() => { setIsOpen(false) }} title={props.title} size={props.size} centered>
-            <Modal.Title>
-                <Divider mb='lg' />
-            </Modal.Title>
+            {
+                props.title &&
+                <Modal.Title>
+                    <Divider mb='lg' />
+                </Modal.Title>
+            }
             {props.content}
         </Modal>
     </ModalContext.Provider>

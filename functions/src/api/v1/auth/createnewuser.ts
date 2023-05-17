@@ -42,7 +42,9 @@ export const createNewUser=functions.https.onCall(async(data,context)=>{
             travelPlans: [],
             type: 'user-profile',
             followersCount: 0,
-            followedCount: 0
+            followedCount: 0,
+            rating: 0,
+            reviews: []
         }
         
         const shortProfile:ShortProfile={

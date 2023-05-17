@@ -58,7 +58,7 @@ export const AuthContextProvider: FC<any> = (props) => {
         else{
             setLoading(true)
             if(asPath.startsWith('/login') || asPath.startsWith('/register'))
-                push('/app/dashboard')
+                push('/app')
             const unsubscribeProfileChangeListener=addOnDocumentChangeListener<UserProfile>('profiles',user.uid,(newUserProfile)=>{   
                        
                 setUserProfile(newUserProfile)

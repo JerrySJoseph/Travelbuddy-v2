@@ -37,7 +37,6 @@ export const createNewTravelPlan = functions.https.onCall(async (data, context) 
         title: 'You have been invited',
         content: `${currentUser.firstname} has invited you to join their next trip to ${_tp.destinations.join(', ')}`,
         datetime: database.ServerValue.TIMESTAMP,
-        seen: false
       };
   
       await rtdb.ref(`notifications/${context.auth.uid}/${notification.id}`).set(notification);
