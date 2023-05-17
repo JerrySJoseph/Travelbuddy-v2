@@ -5,7 +5,7 @@ import { getDatabase ,ServerValue} from 'firebase-admin/database'
 import {v4 as uuid} from 'uuid'
 import { capitalizeFirstLetter } from '../../../utils/stringUtils'
 
-export interface Update{
+interface Update{
     [key:string]:any
 }
 

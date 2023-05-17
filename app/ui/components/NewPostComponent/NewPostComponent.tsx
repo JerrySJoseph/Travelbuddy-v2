@@ -45,7 +45,7 @@ const NewPostComponent = ({ ...props }) => {
         await addPost({
             images: imageFiles,
             text,
-            travelPlan
+            travelPlan:travelPlan||null
         })
         setSuccess('Your new post has been added to your timeline')
         setLoading(false)

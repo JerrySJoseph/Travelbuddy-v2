@@ -190,7 +190,7 @@ export interface Post{
     text?:string,
     ownerId:string,
     medias?:Media[],
-    travelPlan?:TravelPlan
+    travelPlan?:TravelPlan|null
     datetime:any,
     likes?:Like[],
     likeIndex:string[],
@@ -209,7 +209,7 @@ export interface UserComment{
 export interface PostRaw{
     text?:string,
     images?:File[],
-    travelPlan?:TravelPlan
+    travelPlan?:TravelPlan|null
 }
 
 export function getShortProfileFromUserProfile(profile:UserProfileOverride):ShortProfile{
