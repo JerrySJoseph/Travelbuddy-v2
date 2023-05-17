@@ -1,15 +1,13 @@
+import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
+import AppContextProvider from 'data/context/app-context';
+import { AuthContextProvider } from 'data/context/auth-context';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import Script from 'next/script';
-import { MantineProvider, ColorSchemeProvider, ColorScheme } from '@mantine/core';
+import { useState } from 'react';
 import getDefaultTheme from '../Utils/mantineTheme';
-import { useEffect, useState } from 'react';
-import '../styles/globals.css'
-import '../firebase/init'
-import { connectAuthEmulator, getAuth } from 'firebase/auth';
-import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
-import { app } from '../firebase/init'
-import { AuthContextProvider } from 'data/context/auth-context';
+import '../firebase/init';
+import '../styles/globals.css';
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -17,12 +15,12 @@ export default function App(props: AppProps) {
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
-  useEffect(() => {
-    if (window.location.hostname == 'localhost') {
-      connectFunctionsEmulator(getFunctions(app), 'localhost', 5001)
-      connectAuthEmulator(getAuth(app), "http://localhost:9099");
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (window.location.hostname == 'localhost') {
+  //     connectFunctionsEmulator(getFunctions(app), 'localhost', 5001)
+  //     connectAuthEmulator(getAuth(app), "http://localhost:9099");
+  //   }
+  // }, [])
 
   return (
     <>
@@ -41,9 +39,10 @@ export default function App(props: AppProps) {
             colorScheme
           }}
         >
-          <AuthContextProvider>
+          <AppContextProvider>
             <Component {...pageProps} />
-          </AuthContextProvider>
+          </AppContextProvider>
+
         </MantineProvider>
       </ColorSchemeProvider>
 
