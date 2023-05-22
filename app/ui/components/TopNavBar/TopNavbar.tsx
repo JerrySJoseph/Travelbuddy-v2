@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import SearchComponent from "@components/SearchComponent/SearchComponent"
 import { ActionIcon, Avatar, Button, Divider, Indicator, Menu, Skeleton, ThemeIcon, useMantineTheme,Text, CloseButton } from "@mantine/core"
-import { IconBell, IconCar, IconCheck, IconColumns, IconDashboard, IconLayoutDashboard, IconMessage, IconPower, IconUserPlus, IconUsers } from "@tabler/icons"
+import { IconBell, IconCar, IconCheck, IconColumns, IconDashboard, IconLayoutDashboard, IconMessage, IconPower, IconUserPlus, IconUsers, IconX } from "@tabler/icons"
 import { acceptFollowRequest, rejectFollowRequest } from "data/api/relationships"
 import { useAppContext } from "data/context/app-context"
 import { useUserProfile } from "data/hooks/useUserProfile"
@@ -233,5 +233,5 @@ const RequestAcceptRejectButton = ({ followRequest, variant = 'accept' }: IReque
     }
 
     return <Button compact variant="outline" mr='md' onClick={handleAcceptOrReject}
-        loading={loading} leftIcon={<IconCheck size={15} />} color={variant === 'reject' ? 'red' : 'green'}>{variant === 'accept' ? 'Accept' : 'Reject'}{loading && 'ing'}</Button>
+        loading={loading} leftIcon={variant === 'reject' ?<IconX size={15}/>:<IconCheck size={15} />}color={variant === 'reject' ? 'red' : 'green'}>{variant === 'accept' ? 'Accept' : 'Reject'}{loading && 'ing'}</Button>
 }

@@ -1,9 +1,12 @@
-import { Like, Media, Post, PostRaw, ShortProfile, UserComment } from "data/models/user";
+import { Like, Media, Post, PostRaw, ShortProfile, TravelPlanInvite, UserComment } from "data/models/user";
 import { getAuth } from "firebase/auth";
 import { serverTimestamp as db_timestamp, get, getDatabase, remove, ref as rtdbRef, set, update } from "firebase/database";
 import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getCountFromServer, getDoc, getDocs, getFirestore, increment, limit, or, orderBy, query, serverTimestamp, setDoc, startAfter, updateDoc, where } from "firebase/firestore";
+import { getFunctions, httpsCallable } from "firebase/functions";
 import { UploadTaskSnapshot, deleteObject, getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
+import {app} from '../../firebase/init'
 import { v4 as uuid } from 'uuid';
+import { getShortProfile } from "./profile";
 
 const POST_COLLECTION = 'posts'
 
@@ -24,17 +27,20 @@ export const addPost = async (post: PostRaw, progressCallback: UploadProgressCal
 
         const postId = uuid()
 
-        // const ownerShortProfile = await getShortProfile(user.uid)
+         const ownerShortProfile = await getShortProfile(user.uid)
         let postObject: Post = {
             id: postId,
             ownerId: user.uid,
-            // owner: ownerShortProfile,
+             owner: ownerShortProfile,
             datetime: serverTimestamp(),
             text: post.text,
             likeIndex: [],
             likeCount: 0,
             travelPlan: post.travelPlan
         }
+
+        if(postObject.travelPlan)
+            postObject.travelPlan.owner=ownerShortProfile
 
         const firestore = getFirestore();
         const docRef = doc(firestore, POST_COLLECTION, postId)
@@ -258,11 +264,8 @@ export async function joinTravelPlan(postId: string) {
         interestedMembers: arrayUnion(_userid)
     })
 
-    let obj: {
-        [key: string]: any
-    } = {}
-    obj[_userid] = true
-    await update(rtdbRef(getDatabase(), 'travel-plan-interests/' + postId + '/'), obj)
+    
+    await update(rtdbRef(getDatabase(), 'travel-plan-interests/' + postId + '/'+_userid), await getShortProfile(_userid))
     return true;
 }
 
@@ -274,7 +277,7 @@ export async function checkRequestedToJoin(postId: string) {
     if (!postId)
         throw new Error('No post id given for travel plan');
 
-    return (await get(rtdbRef(getDatabase(),'travel-plan-interests/' + postId + '/'+_userid))).exists()
+    return (await get(rtdbRef(getDatabase(), 'travel-plan-interests/' + postId + '/' + _userid))).exists()
 }
 
 export async function deletePost(postId: string) {
@@ -295,4 +298,84 @@ export async function deletePost(postId: string) {
     ])
 
     return true;
+}
+
+
+export async function getFollowingsTravelPlan(max_result: number = 20) {
+    const _userid = getAuth().currentUser?.uid
+
+    if (!_userid)
+        throw new Error('No user logged in')
+
+    const firestore = getFirestore()
+    const followingsSnapshot = await getDocs(collection(firestore, 'profiles', _userid, 'following'))
+    const followings = followingsSnapshot.docs.map(doc => (doc.data() as ShortProfile).id)
+    
+
+    let feedQuery = query(collection(firestore, 'posts'),
+        where('ownerId', 'in', followings),
+        orderBy('datetime', 'desc'),
+        limit(max_result))
+
+    const postsSnapshot = await getDocs(feedQuery)
+    return postsSnapshot.docs.map(doc => doc.data() as Post).filter(p=>!!p.travelPlan)
+
+}
+
+export const acceptTravelPlanInvite = async (travelPlanInvite: TravelPlanInvite) => {
+
+    try {
+
+        const user = getAuth().currentUser
+        if (!user) return false
+        const database=getDatabase();
+        const firestore=getFirestore();
+        const postQuery=query(
+            collection(firestore,'posts'),
+            where('travelPlan.id','==',travelPlanInvite.travelPlan.id),
+            limit(1)
+        )
+        const post=(await getDocs(postQuery)).docs[0].data() as Post
+        const shortProfile=await getShortProfile()
+        const promises=[
+            remove(rtdbRef(database,`travel-plan-invites/${user.uid}/${travelPlanInvite.id}`)),
+            updateDoc(doc(firestore,'posts',post.id),{
+                'travelPlan.group.members':arrayUnion(shortProfile)
+            })
+        ]
+        await Promise.all(promises)
+    } catch (error) {
+        console.log('API ERROR', error)
+        throw error
+    }
+
+}
+
+export const rejectTravelPlanInvite = async (travelPlanInvite: TravelPlanInvite) => {
+
+    try {
+
+        const user = getAuth().currentUser
+        if (!user) return false
+        const database=getDatabase();     
+       
+        const promises=[
+            remove(rtdbRef(database,`travel-plan-invites/${user.uid}/${travelPlanInvite.id}`)),
+            
+        ]
+        await Promise.all(promises)
+    } catch (error) {
+        console.log('API ERROR', error)
+        throw error
+    }
+
+}
+
+export async function addToGroup(postId:string,user:ShortProfile){
+    return (await Promise.all([
+        updateDoc(doc(getFirestore(),'posts',postId),{
+            'travelPlan.group.members':arrayUnion(user)
+        }),
+        remove(rtdbRef(getDatabase(),'travel-plan-interests/' + postId + '/' + user.id))
+    ]))
 }

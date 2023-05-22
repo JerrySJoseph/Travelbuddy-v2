@@ -1,6 +1,8 @@
+import FriendsTravelling from '@components/FriendsTravelling/FriendsTravelling';
 import NewPostComponent from '@components/NewPostComponent/NewPostComponent';
 import PostItem from '@components/PostItem/PostItem';
 import ProfileCard from '@components/ProfileCard/ProfileCard';
+import TravelPlanInvites from '@components/TravelPlanInvites/TravelPlanInvites';
 import { profile } from 'console';
 import { getAllPosts, getFeeds } from 'data/api/post';
 import { useUserProfile } from 'data/hooks/useUserProfile';
@@ -24,7 +26,8 @@ const Dashboard = () => {
           <Feeds/>
         </div>
         <div className="col-lg-3">
-
+          <TravelPlanInvites/>
+          <FriendsTravelling/>
         </div>
       </div>
     </Applayout>

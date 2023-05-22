@@ -1,12 +1,12 @@
 import { addOnChildAddedListener, addOnChildRemovedListener } from 'Utils/rtdbListeners'
 import { acceptFollowRequest, rejectFollowRequest } from 'data/api/relationships'
-import { TravelPlanInvite } from 'data/models/user'
+import { ShortProfile } from 'data/models/user'
 import { getAuth } from 'firebase/auth'
 import { useEffect, useState } from 'react'
 
-export const useTravelPlanInvites = () => {
+export const useInterestedMembers = (postId:string) => {
 
-    const [invites, setRequests] = useState<TravelPlanInvite[]>([])
+    const [users, setUsers] = useState<ShortProfile[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error>()
     const { currentUser } = getAuth()
@@ -15,12 +15,12 @@ export const useTravelPlanInvites = () => {
     useEffect(() => {
         try {
             if (currentUser){
-                const unsubOnAddChild= addOnChildAddedListener<TravelPlanInvite>('travel-plan-invites/' + currentUser.uid, (newTravelPlan) => {
-                    setRequests([...invites,newTravelPlan])
+                const unsubOnAddChild= addOnChildAddedListener<ShortProfile>('travel-plan-interests/' + postId, (newTravelPlan) => {
+                    setUsers([...users,newTravelPlan])
                     setLoading(false)
                 })
-                const unsubOnRemoveChild= addOnChildRemovedListener<TravelPlanInvite>('travel-plan-invites/' + currentUser.uid, (removedRequest) => {
-                    setRequests(invites.filter(r=>r.id===removedRequest.id))
+                const unsubOnRemoveChild= addOnChildRemovedListener<ShortProfile>('travel-plan-interests/' + postId, (removedRequest) => {
+                    setUsers(users.filter(r=>r.id===removedRequest.id))
                     setLoading(false)
                 })
                 return ()=>{
@@ -34,7 +34,7 @@ export const useTravelPlanInvites = () => {
     }, [currentUser])
 
     return {
-        invites,
+        users,
         loading,
         error,
         acceptFollowRequest,

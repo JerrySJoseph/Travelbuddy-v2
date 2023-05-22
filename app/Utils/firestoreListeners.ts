@@ -1,5 +1,5 @@
 import parseFirebaseError from "../firebase/firebaseErrorParser";
-import { getFirestore, collection, onSnapshot, doc } from "firebase/firestore";
+import { getFirestore, collection, onSnapshot, doc, Query } from "firebase/firestore";
 
 
 export function addOnCollectionChangeListener<T>(collectionName: string, callback: (newData: T[]) => any) {
@@ -10,6 +10,33 @@ export function addOnCollectionChangeListener<T>(collectionName: string, callbac
 
         //register a snapshot change listener for fetching data on changes
         const unsubscribe = onSnapshot(collectionRef, (docs) => {
+
+            const fetchedList: T[] = [];
+            //parse snapshot array-> Page array
+            docs.forEach(document => {
+                fetchedList.push(document.data() as T)
+            });
+
+            //callback invoked after sanitizing new data
+            callback(fetchedList);
+
+            //throw error as it is for handling
+        }, (error) => { throw error })
+
+        return unsubscribe;
+
+    } catch (error) {
+        throw parseFirebaseError(error);
+    }
+}
+
+
+export function addOnQueryChangeListener<T>(query:Query, callback: (newData: T[]) => any) {
+    try {
+
+        const firestore = getFirestore();
+        //register a snapshot change listener for fetching data on changes
+        const unsubscribe = onSnapshot(query, (docs) => {
 
             const fetchedList: T[] = [];
             //parse snapshot array-> Page array
