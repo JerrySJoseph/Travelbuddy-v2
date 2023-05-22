@@ -74,7 +74,7 @@ const SearchComponent = () => {
 
     return (
         <Autocomplete
-            placeholder="Search for users, destinations, tags, etc."
+            placeholder="Search for users..."
             value={searchInput}
             onChange={setSearchInput}
             data={data}

@@ -15,6 +15,7 @@ import { useUserProfile } from 'data/hooks/useUserProfile'
 import { Like, Post, ShortProfile, TravelPlan, UserComment } from 'data/models/user'
 import { getAuth } from 'firebase/auth'
 import { memo, useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 
 export interface IPostItemProps {
     post: Post,
@@ -269,13 +270,13 @@ function PostHeader({ ownerId, showEditMenu, onDeleteClick, showInterestUsersLis
 
 
     return <div className="d-flex align-items-center justify-content-between p-2 w-100">
-        <div className="d-flex align-items-center">
+        <Link href={`/app/profile/${ownerId}`} className="d-flex align-items-center">
             <Avatar src={owner?.avatar} radius='xl' />
             <div className='ms-2'>
                 <Text tt='capitalize' lh={1}>{owner?.firstname} {owner?.lastname}</Text>
                 <Text color='dimmed' size='xs'>@{owner?.username}</Text>
             </div>
-        </div>
+        </Link>
         {
 
             <Menu shadow="md"  >
