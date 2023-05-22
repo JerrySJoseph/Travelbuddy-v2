@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import NewPostComponent from '@components/NewPostComponent/NewPostComponent';
 import ProfileCard from '@components/ProfileCard/ProfileCard';
-import { LoadingOverlay, Skeleton } from '@mantine/core';
+import { LoadingOverlay, Skeleton, Text } from '@mantine/core';
 import { getUserProfileWithId } from 'data/api/profile';
 import { useAppContext } from 'data/context/app-context';
 import { getAuth } from 'firebase/auth';
@@ -14,6 +14,8 @@ import MyProfilePage from 'ui/sections/MyProfilePage';
 import UserProfilePage from 'ui/sections/UserProfilePage';
 import { deletePost, getAllPosts } from 'data/api/post';
 import PostItem from '@components/PostItem/PostItem';
+import FriendsTravelling from '@components/FriendsTravelling/FriendsTravelling';
+import TravelPlanInvites from '@components/TravelPlanInvites/TravelPlanInvites';
 
 
 const ProfilePage = () => {
@@ -76,12 +78,12 @@ const ProfilePage = () => {
         return <>NO such user profile</>
 
     if (loading || !userProfile)
-        return <LoadingOverlay visible/>
+        return <LoadingOverlay visible />
 
     return (<Applayout>
         <div className="row">
             <div className="col-lg-3">
-                <ProfileCard profile={profile} showFollowButton={profile.id!=userProfile.id} />
+                <ProfileCard profile={profile} showFollowButton={profile.id != userProfile.id} />
             </div>
             <div className="col-lg-6">
                 {
@@ -89,13 +91,24 @@ const ProfilePage = () => {
                     <NewPostComponent className='mb-3' />
                 }
                 {
-                    myposts.map(pi => <PostItem key={pi.id} post={pi} ondeleteClick={()=>{
+                    myposts.map(pi => <PostItem key={pi.id} post={pi} ondeleteClick={() => {
                         handleOnDeleteClick(pi.id)
                     }} />)
                 }
+                {
+                    myposts.length === 0 &&
+                    <div className="card p-4 rounded-4">
+                        <div className="text-center p-2">
+                            <img src='/img/empty_posts.svg' alt='empty' width='70%' />
+                            <Text size='sm' fw='bold' mt='xs' color='dimmed'>No Posts Yet</Text>
+                            <Text size='xs' color='dimmed'>Seems like {userProfile.id == id ? 'you have' : `${profile.firstname} has`} not posted anything yet.</Text>
+                        </div>
+                    </div>
+                }
             </div>
             <div className="col-lg-3">
-
+                <TravelPlanInvites />
+                <FriendsTravelling />
             </div>
         </div>
     </Applayout>
