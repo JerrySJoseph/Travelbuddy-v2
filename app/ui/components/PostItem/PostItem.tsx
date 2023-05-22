@@ -12,7 +12,7 @@ import { getShortProfile } from 'data/api/profile'
 import { useAppContext } from 'data/context/app-context'
 import { useModal } from 'data/context/modal-context'
 import { useUserProfile } from 'data/hooks/useUserProfile'
-import { Like, Post, ShortProfile, UserComment } from 'data/models/user'
+import { Like, Post, ShortProfile, TravelPlan, UserComment } from 'data/models/user'
 import { getAuth } from 'firebase/auth'
 import { memo, useEffect, useMemo, useState } from 'react'
 
@@ -89,7 +89,7 @@ const PostItem = ({ post, showEditMenu = false, ondeleteClick = () => { } }: IPo
     function handleOnInterestedMembersJoinClick() {
         openModal({
             title: 'Interested Members',
-            content: <InterestedMembersList />
+            content: <InterestedMembersList postId={currentPost.id}/>
         })
     }
 
@@ -150,11 +150,8 @@ const PostItem = ({ post, showEditMenu = false, ondeleteClick = () => { } }: IPo
                             </div>
 
                         </div>
-                        {
-                            userProfile && (currentPost.travelPlan.inviteMembers.includes(userProfile.id) ?
-                                <Button radius='xl' compact disabled>{owner && capitalizeFirstLetter(owner?.firstname)} invited you</Button> :
-                                <Button radius='xl' compact onClick={handleJoinClick} disabled={joined || (currentPost.travelPlan.interestedMembers?.includes(userProfile.id)) || requestedJoin} loading={loadingJoin} >{joined || (currentPost.travelPlan.interestedMembers?.includes(userProfile.id) || requestedJoin) ? `Requested` : `Join ${owner?.firstname}`}</Button>)
-                        }
+                        {currentPost.travelPlan && <JoinButton post={currentPost}/>}
+                        
                     </div>
                 </div>
             }
@@ -192,6 +189,50 @@ const PostItem = ({ post, showEditMenu = false, ondeleteClick = () => { } }: IPo
             </div>
         </div>
     )
+}
+
+
+interface JoinButtonProps {
+    post: Post
+}
+const JoinButton = ({ post }: JoinButtonProps) => {
+
+    
+    const [loading, setLoading] = useState<boolean>(false);
+    const [joined, setJoined] = useState<boolean>(false);
+    const [invited, setInvited] = useState<boolean>(false);
+    const {setError}=useAppContext();
+
+    const user = getAuth().currentUser
+
+    useEffect(() => {
+        if (user && post.travelPlan && post.travelPlan.inviteMembers.includes(user?.uid))
+            setInvited(true);
+        if (post.travelPlan &&post.travelPlan.group.members.find(m => m.id === user?.uid))
+            setJoined(true);
+
+    })
+
+
+    async function handleJoinClick(){
+        try {
+            setLoading(true)
+            await joinTravelPlan(post.id)
+            setJoined(true)
+        } catch (error) {
+            setError(error as Error)
+        } finally{
+            setLoading(false);
+        }
+    }
+
+    if (joined)
+        return <Button compact disabled radius='xl'>Joined</Button>
+    if (invited)
+        return <Button compact disabled radius='xl'>{capitalizeFirstLetter(post.travelPlan?.owner?.firstname||'')} invited you </Button>
+
+    return <Button compact loading={loading} radius='xl' onClick={handleJoinClick}>Join {post.travelPlan?.owner?.firstname}</Button>
+
 }
 
 

@@ -12,7 +12,7 @@ const TravelPlanInvites = () => {
 
     const Item = ({ invite }: { invite: TravelPlanInvite }) => {
         return (
-            <div className="card p-2 rounded-4 mb-4">
+            <div className="card p-3 rounded-4 mb-4">
                 <div className="d-flex align-items-center">
                     <Avatar src={invite.owner.avatar} radius='xl' size='md' />
                     <div className="ms-2">

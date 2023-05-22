@@ -117,7 +117,8 @@ export interface TravelGroupOverride{
 export interface TravelPlan{
     type:'travel-plan',
     id:string,
-    createdBy?:string
+    createdBy?:string,
+    owner?:ShortProfile,
     destinations:Destination[]
     group:TravelGroup,
     inviteMembers:string[]
@@ -189,6 +190,7 @@ export interface Post{
     id:string,
     text?:string,
     ownerId:string,
+    owner:ShortProfile
     medias?:Media[],
     travelPlan?:TravelPlan|null
     datetime:any,
