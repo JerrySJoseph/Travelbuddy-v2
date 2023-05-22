@@ -26,6 +26,7 @@ export const inviteMembersOnNewPost = functions.firestore.document('posts/{postI
             type: 'travel-plan-invite',
             id: invitedId,
             ownerId: owner.id,
+            owner,
             travelPlan: newPost.travelPlan,
             datetime: ServerValue.TIMESTAMP,
             recipientId: id,
