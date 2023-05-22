@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, getFirestore, limit, query, updateDoc, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, getFirestore, limit, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import { app } from '../../firebase/init';
 import { ShortProfile, UserProfile, UserProfileOverride, getShortProfileFromUserProfile } from '../models/user';
 import { getAuth } from 'firebase/auth';
@@ -33,10 +33,12 @@ export const getUserProfileWithName = async (firstname: string, lastname: string
 }
 
 export const searchUser = async (identifier: string = '', max_results: number = 10) => {
+
     identifier = identifier.toLowerCase()
     const firestore = getFirestore(app)
     const searchQuery = query(collection(firestore, 'short-profiles'),
-        where('firstname', '>=', identifier),
+        where('username', '>=', identifier),
+        orderBy('username'),
         limit(max_results))
     const searchSnapshots = await getDocs(searchQuery)
     const results: ShortProfile[] = []

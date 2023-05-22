@@ -91,8 +91,8 @@ export interface TravelGroup{
     type:'travel-group',
     id:string,
     name:string,
-    createdBy?:UserProfile,
-    members:UserProfile[],
+    createdBy?:ShortProfile,
+    members:ShortProfile[],
     rating?:number,
     reviews?:UserReview[]
 }
@@ -117,10 +117,10 @@ export interface TravelGroupOverride{
 export interface TravelPlan{
     type:'travel-plan',
     id:string,
-    createdBy?:UserProfile
+    createdBy?:string
     destinations:Destination[]
     group:TravelGroup,
-    inviteMembers:UserProfile[]
+    inviteMembers:string[]
     isPrivate:Boolean,
     travellingDateRange:{
         start:number,
@@ -128,7 +128,7 @@ export interface TravelPlan{
         flexibility:number
     },
     summary:string,
-    interestedMembers?:UserProfile[]
+    interestedMembers?:string[]
 }
 
 export interface TravelPlanOverride{

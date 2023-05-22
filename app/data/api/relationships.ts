@@ -140,3 +140,7 @@ export const getFollowing = async (userId?: string) => {
     })
     return followers;
 }
+
+export const acceptInterestedMember=async(userId:string)=>{
+    
+}

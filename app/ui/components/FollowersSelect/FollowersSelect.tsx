@@ -28,7 +28,11 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
 
 SelectItem.displayName = ''
 
-const FollowersSelect = () => {
+interface FollowersSelectProps{
+    onChange?:(followers:string[])=>any
+}
+
+const FollowersSelect = ({onChange=()=>{}}:FollowersSelectProps) => {
 
     const [followersList,setFollowersList]=useState<ItemProps[]>([])
     const [selectedIds,setSelectedIds]=useState<string[]>([])
@@ -59,7 +63,10 @@ const FollowersSelect = () => {
             data={followersList}
             searchable
             value={selectedIds}
-            onChange={setSelectedIds}
+            onChange={ids=>{
+                setSelectedIds(ids);
+                onChange(ids)
+            }}
             nothingFound="Nobody here..."
             maxDropdownHeight={400}
         />

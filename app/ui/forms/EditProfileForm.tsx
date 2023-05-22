@@ -76,7 +76,7 @@ const EditProfileForm = ({ profile }: IEditProfileForm) => {
     }
 
     function handleImageChange(f: File) {
-        console.log('image changed')
+    
         setImageLoading(true)
         setAvatar(URL.createObjectURL(f))
         setFile(f);

@@ -10,6 +10,5 @@ export const getDestinations = async (searchString:string='',limit:number=10) =>
     dbSnapshot.forEach(dest => {
         destinations.push(dest.val() as Destination)
     })
-    console.log(destinations)
     return destinations
 }

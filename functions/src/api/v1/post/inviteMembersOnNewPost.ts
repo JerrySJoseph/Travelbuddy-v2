@@ -10,11 +10,11 @@ interface Update {
 
 export const inviteMembersOnNewPost = functions.firestore.document('posts/{postId}').onCreate(async (snapshot, context) => {
     const newPost = snapshot.data() as Post
-    if (!newPost.travelPlan || newPost.travelPlan.group.members.length === 0)
+    if (!newPost.travelPlan || newPost.travelPlan.inviteMembers.length === 0)
         return;
 
     const owner = (await getFirestore().collection('short-profiles').doc(newPost.ownerId).get()).data() as ShortProfile
-    const memberIds = newPost.travelPlan.group.members.map(m => m.id)
+    const memberIds = newPost.travelPlan.inviteMembers;
     const invitationsRef = getDatabase().ref('travel-plan-invites')
     const updates: Update = {}
 

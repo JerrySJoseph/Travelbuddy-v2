@@ -1,30 +1,39 @@
 import NewPostComponent from '@components/NewPostComponent/NewPostComponent'
 import PostItem from '@components/PostItem/PostItem'
-import { ScrollArea } from '@mantine/core'
-import { getFeeds } from 'data/api/post'
-import { useUserProfile } from 'data/hooks/useUserProfile'
+import { Button, ScrollArea } from '@mantine/core'
+import { getFeeds, getFeedsCount } from 'data/api/post'
 import { Post } from 'data/models/user'
-import React, { useEffect, useState } from 'react'
-import InfiniteScroll from 'react-infinite-scroll-component'
+import { useEffect, useState } from 'react'
 
 const Feeds = () => {
 
     const [posts, setPosts] = useState<Post[]>([])
-    const { userProfile } = useUserProfile()
-
+    const [count,setCount]=useState<number>(0)
+    
     async function fetchPosts() {
-        setPosts(await getFeeds())
+        setPosts([...posts,...(await getFeeds())])
+        setCount(await getFeedsCount())
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchPosts()
-    },[])
+    }, [])
+
+    async function getNextFeeds(){
+        const newFeeds=await getFeeds(posts[posts.length-1],20)
+        setPosts([...posts,...newFeeds])
+    }
+
 
     return (
         <ScrollArea h={'90vh'}>
-            <NewPostComponent className='mb-3'/>
+            <NewPostComponent className='mb-3' />
             {
-                posts.map(p=><PostItem post={p} key={p.id}/>)
+                posts.map(p => <PostItem post={p} key={p.id} />)
+            }
+            {
+                posts.length<count &&
+                <Button variant='outline' onClick={getNextFeeds}>Load More</Button>
             }
         </ScrollArea>
     )

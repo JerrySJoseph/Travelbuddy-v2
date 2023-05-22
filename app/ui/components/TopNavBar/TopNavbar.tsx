@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import SearchComponent from "@components/SearchComponent/SearchComponent"
-import { ActionIcon, Avatar, Button, Divider, Indicator, Menu, Skeleton, ThemeIcon, useMantineTheme,Text } from "@mantine/core"
+import { ActionIcon, Avatar, Button, Divider, Indicator, Menu, Skeleton, ThemeIcon, useMantineTheme,Text, CloseButton } from "@mantine/core"
 import { IconBell, IconCar, IconCheck, IconColumns, IconDashboard, IconLayoutDashboard, IconMessage, IconPower, IconUserPlus, IconUsers } from "@tabler/icons"
 import { acceptFollowRequest, rejectFollowRequest } from "data/api/relationships"
 import { useAppContext } from "data/context/app-context"
@@ -50,18 +50,18 @@ export function NotificationMenu({ ...props }) {
     const theme = useMantineTheme();
 
 
-    const { notifications, loading, error } = useNotifications()
+    const { notifications, loading,opened,hasNewData } = useNotifications()
 
     return (
         <Menu
             position="top-end"
             width={300}
             withinPortal
-
+            onOpen={opened}
             {...props}
         >
             <Menu.Target>
-                <Indicator position='top-end' offset={7} size={8} disabled={notifications.length == 0}>
+                <Indicator position='top-end' offset={7} size={8} disabled={hasNewData}>
                     <ActionIcon variant="subtle">
                         <IconBell size="1.2rem" />
                     </ActionIcon>
@@ -90,12 +90,12 @@ export function NotificationMenu({ ...props }) {
                 {
                     notifications.map(n => (
                         <Menu.Item key={n.id}
-                            icon={<IconBell size="1rem" color={theme.colors.gray[6]} stroke={1.5} />}
-                        >
+                            icon={<IconBell size="1rem" color={theme.colors.gray[6]} stroke={1.5} />}>
                             <div>
                                 <Text size='sm' fw='bold'>{n.title}</Text>
                                 <Text size='sm' tt='capitalize'>{n.content}</Text>
                             </div>
+                            
                         </Menu.Item>
                     ))
                 }
