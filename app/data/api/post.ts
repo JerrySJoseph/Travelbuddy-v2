@@ -150,15 +150,12 @@ export async function getFeeds(lastPost?: Post, max_result: number = 20) {
     const followings = followingsSnapshot.docs.map(doc => (doc.data() as ShortProfile).id)
     followings.push(_userid)
 
-    console.log('last post', lastPost)
-
     let feedQuery = query(collection(firestore, 'posts'),
         or(where('ownerId', 'in', followings),
             where('travelPlan.isPrivate', '==', false)
         ),
         limit(max_result),
-        orderBy('datetime', 'desc'),
-        startAfter(lastPost || {}))
+        orderBy('datetime', 'desc'))
 
     const postsSnapshot = await getDocs(feedQuery)
     return postsSnapshot.docs.map(doc => doc.data() as Post)

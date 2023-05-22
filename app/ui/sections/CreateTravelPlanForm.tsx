@@ -208,7 +208,7 @@ export function CreateTravelPlanForm({ onSave = () => { } }: CreateTravelPlanPro
                     </form>
                     <div className="d-flex justify-content-between align-items-center mt-4">
                         <Button variant='outline' leftIcon={<IconArrowLeft size='1rem' />} onClick={prevStep}>Back</Button>
-                        <Button rightIcon={<IconArrowRight size='1rem' />} variant='outline' onClick={nextStep} disabled={inviteMembers.length === 0 || travelGroupName.length === 0}>Next</Button>
+                        <Button rightIcon={<IconArrowRight size='1rem' />} variant='outline' onClick={nextStep} disabled={travelGroupName.length === 0}>Next</Button>
                     </div>
                 </Stepper.Step>
                 <Stepper.Step

@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
 import LikeButton from '@components/LikeButton/LikeButton'
 import LikesBanner from '@components/LikesBanner/LikesBanner'
+import InterestedMembersList from '@components/interestedMembersList/InterestedMembersList'
 import { Carousel } from '@mantine/carousel'
 import { ActionIcon, Avatar, Button, Divider, Image, LoadingOverlay, Menu, Skeleton, Text, Textarea, ThemeIcon, UnstyledButton } from '@mantine/core'
 import { IconCar, IconDotsVertical, IconSend, IconTrash, IconUsers } from '@tabler/icons'
@@ -9,6 +10,7 @@ import { capitalizeFirstLetter } from 'Utils/stringutils'
 import { addComment, checkRequestedToJoin, deletePost, getComments, getCommentsCount, joinTravelPlan } from 'data/api/post'
 import { getShortProfile } from 'data/api/profile'
 import { useAppContext } from 'data/context/app-context'
+import { useModal } from 'data/context/modal-context'
 import { useUserProfile } from 'data/hooks/useUserProfile'
 import { Like, Post, ShortProfile, UserComment } from 'data/models/user'
 import { getAuth } from 'firebase/auth'
@@ -32,6 +34,7 @@ const PostItem = ({ post, showEditMenu = false, ondeleteClick = () => { } }: IPo
     const [joined, setJoined] = useState<boolean>(false);
     const [requestedJoin, setRequestedJoin] = useState<boolean>(false)
 
+    const { openModal } = useModal()
 
     const { setError } = useAppContext();
 
@@ -83,6 +86,13 @@ const PostItem = ({ post, showEditMenu = false, ondeleteClick = () => { } }: IPo
         }
     }
 
+    function handleOnInterestedMembersJoinClick() {
+        openModal({
+            title: 'Interested Members',
+            content: <InterestedMembersList />
+        })
+    }
+
     if (loading) {
         <div className="card p-4 rounded-4 mb-3">
             <LoadingOverlay visible />
@@ -92,7 +102,8 @@ const PostItem = ({ post, showEditMenu = false, ondeleteClick = () => { } }: IPo
     return (
         <div className="card p-0 rounded-4 mb-3">
             <div className="d-flex p-2">
-                <PostHeader ownerId={currentPost.ownerId} showEditMenu={showEditMenu} onDeleteClick={ondeleteClick} />
+                <PostHeader ownerId={currentPost.ownerId} showEditMenu={showEditMenu} onDeleteClick={ondeleteClick} showInterestUsersList={!!currentPost.travelPlan}
+                    onInterestedMembersClick={handleOnInterestedMembersJoinClick} />
             </div>
             <Divider />
 
@@ -189,15 +200,19 @@ interface HeaderProps {
     ownerId: string,
     showEditMenu: boolean,
     showInterestUsersList: boolean,
+    onInterestedMembersClick: () => any,
     onDeleteClick?: () => any
 }
-function PostHeader({ ownerId, showEditMenu, onDeleteClick, showInterestUsersList = false }: HeaderProps) {
+function PostHeader({ ownerId, showEditMenu, onDeleteClick, showInterestUsersList = false, onInterestedMembersClick = () => { } }: HeaderProps) {
     const [loading, setLoading] = useState<boolean>(true)
     const [owner, setOwner] = useState<ShortProfile>()
 
     useEffect(() => {
         fetchData()
     }, [ownerId])
+
+
+
 
     const fetchData = async () => {
         setLoading(true)
@@ -234,7 +249,7 @@ function PostHeader({ ownerId, showEditMenu, onDeleteClick, showInterestUsersLis
                     {(ownerId === getAuth().currentUser?.uid) &&
                         <>
 
-                            {showInterestUsersList && <Menu.Item icon={<IconUsers size={18} />} onClick={onDeleteClick}>
+                            {showInterestUsersList && <Menu.Item icon={<IconUsers size={18} />} onClick={onInterestedMembersClick}>
                                 View all interested users
                             </Menu.Item>}
                             <Menu.Item icon={<IconTrash size={18} />} color='red' onClick={onDeleteClick}>

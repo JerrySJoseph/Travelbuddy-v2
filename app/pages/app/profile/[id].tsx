@@ -81,7 +81,7 @@ const ProfilePage = () => {
     return (<Applayout>
         <div className="row">
             <div className="col-lg-3">
-                <ProfileCard profile={userProfile} showFollowButton={false} />
+                <ProfileCard profile={profile} showFollowButton={profile.id!=userProfile.id} />
             </div>
             <div className="col-lg-6">
                 {
