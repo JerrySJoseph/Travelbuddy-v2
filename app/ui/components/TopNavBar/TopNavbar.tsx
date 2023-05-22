@@ -10,6 +10,7 @@ import { useNotifications } from "data/hooks/useNotifications"
 import { FollowRequest } from "data/models/user"
 import { useRouter } from "next/router"
 import { useState } from "react"
+import Link from "next/link"
 
 
 export interface ITopNavBarProps {
@@ -18,21 +19,22 @@ export interface ITopNavBarProps {
 
 const TopNavbar = ({ isFluid }: ITopNavBarProps) => {
 
+    const {toggleMessage}=useAppContext();
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
             <div className={`container${isFluid ? '-fluid' : ''}`}>
                 <div className="col-lg-3">
-                    <Avatar src={'/img/panda.png'} size='md' radius='xl' />
+                    <Link href='/app' role="button">
+                    <Avatar src={'/img/panda.png'} size='md' radius='xl' role="button"/>
+                    </Link>
                 </div>
                 <div className="col-lg-6">
                     <SearchComponent />
                 </div>
                 <div className="col-lg-3 d-flex justify-content-end">
                     <InvitationsMenu className='me-2' />
-                    <ActionIcon variant="subtle" className='me-2'  >
-                        <IconMessage size="1.2rem" />
-                    </ActionIcon>
+                    
                     <NotificationMenu className='me-4' />
                     <UserControlMenu />
                 </div>
@@ -139,11 +141,7 @@ export function UserControlMenu() {
                 >
                     My Feeds
                 </Menu.Item>
-                <Menu.Item
-                    icon={<IconCar size="1rem" color={theme.colors.pink[6]} stroke={1.5} />}>
-                    My Travel Plans
-                </Menu.Item>
-
+               
                 <Menu.Item
                     icon={<IconPower size="1rem" color={theme.colors.red[6]} stroke={1.5} />}
                     onClick={logout}

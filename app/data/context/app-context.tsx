@@ -13,6 +13,8 @@ interface IuiNotification {
 
 interface IAppContext {
     notification?: IuiNotification,
+    messageOpen:boolean,
+    toggleMessage:()=>any,
     setError: (error: Error) => any,
     setInfo: (info: string) => any
     setSuccess: (msg: string) => any
@@ -30,7 +32,11 @@ const defaultAppContext: IAppContext = {
     setLoading(msg) {
     },
     getNotificationProps() {
-        return {}
+        return {};
+    },
+    messageOpen: false,
+    toggleMessage: function () {
+       
     }
 }
 
@@ -44,6 +50,7 @@ interface IAppContextProviderProps {
 const AppContextProvider = ({ children }: IAppContextProviderProps) => {
 
     const [notification, setNotification] = useState<IuiNotification>()
+    const [messageOpen,setMessageOpen]=useState<boolean>(false);
 
     useEffect(()=>{
         if(notification && notification.type!=='loading'){
@@ -89,27 +96,31 @@ const AppContextProvider = ({ children }: IAppContextProviderProps) => {
             setNotification({
                 type: 'error',
                 message: (error as Error).message
-            })
+            });
         },
         setInfo(message) {
             setNotification({
                 type: 'info',
                 message
-            })
+            });
         },
         setLoading(message) {
             setNotification({
                 type: 'loading',
                 message
-            })
+            });
         },
         setSuccess(message) {
             setNotification({
                 type: 'success',
                 message
-            })
+            });
         },
-        getNotificationProps
+        getNotificationProps,
+        messageOpen,
+        toggleMessage: function () {
+            setMessageOpen(!messageOpen)
+        }
     }
 
     const defaultProps: DialogProps = {

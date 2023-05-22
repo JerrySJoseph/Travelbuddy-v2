@@ -1,30 +1,28 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import FriendsTravelling from '@components/FriendsTravelling/FriendsTravelling';
 import NewPostComponent from '@components/NewPostComponent/NewPostComponent';
+import PostItem from '@components/PostItem/PostItem';
 import ProfileCard from '@components/ProfileCard/ProfileCard';
+import TravelPlanInvites from '@components/TravelPlanInvites/TravelPlanInvites';
 import { LoadingOverlay, Skeleton, Text } from '@mantine/core';
+import { deletePost, getAllPosts } from 'data/api/post';
 import { getUserProfileWithId } from 'data/api/profile';
 import { useAppContext } from 'data/context/app-context';
-import { getAuth } from 'firebase/auth';
+import { useUserProfile } from 'data/hooks/useUserProfile';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Applayout from 'ui/Layout/AppLayout/Applayout';
 import { Post, UserProfile } from '../../../data/models/user';
-import { useUserProfile } from 'data/hooks/useUserProfile';
-import MyProfilePage from 'ui/sections/MyProfilePage';
-import UserProfilePage from 'ui/sections/UserProfilePage';
-import { deletePost, getAllPosts } from 'data/api/post';
-import PostItem from '@components/PostItem/PostItem';
-import FriendsTravelling from '@components/FriendsTravelling/FriendsTravelling';
-import TravelPlanInvites from '@components/TravelPlanInvites/TravelPlanInvites';
+import { useUserPosts } from 'data/hooks/useUserPosts';
 
 
 const ProfilePage = () => {
 
     const { id } = useRouter().query;
+    const {posts}=useUserPosts(id as string)
     const { setError } = useAppContext()
     const { userProfile } = useUserProfile()
     const [profile, setProfile] = useState<UserProfile>()
-    const [myposts, setMyPosts] = useState<Post[]>([])
     const [loading, setLoading] = useState<boolean>(true)
 
 
@@ -37,7 +35,6 @@ const ProfilePage = () => {
         try {
             setLoading(true)
             setProfile(await getUserProfileWithId(id))
-            setMyPosts(await getAllPosts(id))
         } catch (error) {
             console.error(error)
             setError(error as Error)
@@ -91,12 +88,12 @@ const ProfilePage = () => {
                     <NewPostComponent className='mb-3' />
                 }
                 {
-                    myposts.map(pi => <PostItem key={pi.id} post={pi} ondeleteClick={() => {
+                    posts.map(pi => <PostItem key={pi.id} post={pi} ondeleteClick={() => {
                         handleOnDeleteClick(pi.id)
                     }} />)
                 }
                 {
-                    myposts.length === 0 &&
+                    posts.length === 0 &&
                     <div className="card p-4 rounded-4">
                         <div className="text-center p-2">
                             <img src='/img/empty_posts.svg' alt='empty' width='70%' />
