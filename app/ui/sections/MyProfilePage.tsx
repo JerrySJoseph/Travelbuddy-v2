@@ -23,7 +23,7 @@ const MyProfilePage = ({ posts }: IUserProfilePage) => {
             <div className="col-lg-6">
                 <NewPostComponent className='mb-3'/>
                 {
-                    posts.map(pi => <PostItem key={pi.id} post={pi} showEditMenu />)
+                    posts.map(pi => <PostItem key={pi.id} post={pi}/>)
                 }
             </div>
             <div className="col-lg-3">

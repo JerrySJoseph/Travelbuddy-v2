@@ -2,12 +2,15 @@ import { addOnChildAddedListener, addOnChildRemovedListener } from 'Utils/rtdbLi
 import { Notification } from 'data/models/user'
 import { getAuth } from 'firebase/auth'
 import { useEffect, useState } from 'react'
+import { useLocalStorage } from 'usehooks-ts'
 
 export const useNotifications = () => {
 
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error>()
+    const [lastUpdate,setLastUpdate]=useLocalStorage('notif-last-update',0)
+    const [lastSeen,setLastSeen]=useLocalStorage('notif-last-seen',0)
     const { currentUser } = getAuth()
 
 
@@ -16,6 +19,7 @@ export const useNotifications = () => {
             if (currentUser){
                 const unsubOnAddChild= addOnChildAddedListener<Notification>('notifications/' + currentUser.uid, (newFollowRequest) => {
                     setNotifications([...notifications,newFollowRequest])
+                    setLastUpdate(Date.now())
                     setLoading(false)
                 })
                 const unsubOnRemoveChild= addOnChildRemovedListener<Notification>('notifications/' + currentUser.uid, (removedRequest) => {
@@ -35,7 +39,9 @@ export const useNotifications = () => {
     return {
         notifications,
         loading,
-        error
+        error,
+        hasNewData:lastUpdate>lastSeen,
+        opened:()=>setLastSeen(Date.now())
     }
 
 }

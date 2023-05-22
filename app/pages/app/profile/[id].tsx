@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import NewPostComponent from '@components/NewPostComponent/NewPostComponent';
 import ProfileCard from '@components/ProfileCard/ProfileCard';
-import { Skeleton } from '@mantine/core';
+import { LoadingOverlay, Skeleton } from '@mantine/core';
 import { getUserProfileWithId } from 'data/api/profile';
 import { useAppContext } from 'data/context/app-context';
 import { getAuth } from 'firebase/auth';
@@ -12,7 +12,8 @@ import { Post, UserProfile } from '../../../data/models/user';
 import { useUserProfile } from 'data/hooks/useUserProfile';
 import MyProfilePage from 'ui/sections/MyProfilePage';
 import UserProfilePage from 'ui/sections/UserProfilePage';
-import { getAllPosts } from 'data/api/post';
+import { deletePost, getAllPosts } from 'data/api/post';
+import PostItem from '@components/PostItem/PostItem';
 
 
 const ProfilePage = () => {
@@ -43,6 +44,19 @@ const ProfilePage = () => {
         }
     }
 
+    async function handleOnDeleteClick(postId: string) {
+        try {
+            console.log('calling delete')
+            setLoading(true)
+            console.log('deleted', await deletePost(postId))
+            userProfile && fetchData(userProfile?.id)
+        } catch (error) {
+            setError(error as Error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
     if (loading)
         return <Applayout>
             <div className="row">
@@ -61,15 +75,30 @@ const ProfilePage = () => {
     if (!profile)
         return <>NO such user profile</>
 
-    if (userProfile && userProfile.id === id)
-        return <Applayout>
-            <MyProfilePage posts={myposts} />
-        </Applayout>
+    if (loading || !userProfile)
+        return <LoadingOverlay visible/>
 
-    return (
-        <Applayout>
-            <UserProfilePage profile={profile} posts={myposts} />
-        </Applayout>
+    return (<Applayout>
+        <div className="row">
+            <div className="col-lg-3">
+                <ProfileCard profile={profile} showFollowButton={profile.id!=userProfile.id} />
+            </div>
+            <div className="col-lg-6">
+                {
+                    userProfile && userProfile.id === id &&
+                    <NewPostComponent className='mb-3' />
+                }
+                {
+                    myposts.map(pi => <PostItem key={pi.id} post={pi} ondeleteClick={()=>{
+                        handleOnDeleteClick(pi.id)
+                    }} />)
+                }
+            </div>
+            <div className="col-lg-3">
+
+            </div>
+        </div>
+    </Applayout>
     )
 }
 

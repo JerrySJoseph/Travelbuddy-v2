@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
+import FollowersSelect from '@components/FollowersSelect/FollowersSelect';
 import {
     Button,
     Group,
     MultiSelect,
-    PaperProps,
+    SelectItemProps,
     Stepper,
     Switch,
     TextInput,
@@ -11,12 +12,12 @@ import {
     ThemeIcon
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
-import { IconAlertTriangle, IconArrowLeft, IconArrowRight, IconCalendar, IconCar, IconCheck, IconEyeOff, IconHeart, IconSend, IconTools, IconUsers, IconWorld } from '@tabler/icons';
+import { IconArrowLeft, IconArrowRight, IconCalendar, IconCar, IconEyeOff, IconHeart, IconSend, IconUsers, IconWorld } from '@tabler/icons';
 import { getDestinations } from 'data/api/destinations';
-import { getAllUserProfiles, getUserProfileWithName } from 'data/api/profile';
-import { createNewTravelPlan } from 'data/api/travelplan';
+import { getShortProfile } from 'data/api/profile';
+import { getFollowers } from 'data/api/relationships';
 import { useUserProfile } from 'data/hooks/useUserProfile';
-import { Destination, TravelGroup, TravelPlan, UserProfile } from 'data/models/user';
+import { Destination, ShortProfile, TravelGroup, TravelPlan, getShortProfileFromUserProfile } from 'data/models/user';
 import { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
@@ -27,16 +28,15 @@ interface IMultiSelectItem {
     object: Destination
 }
 
-interface CreateTravelPlanProps{
-    onSave:(travelPlan:TravelPlan)=>any
+interface CreateTravelPlanProps {
+    onSave: (travelPlan: TravelPlan) => any
 }
-export function CreateTravelPlanForm({onSave=()=>{}}: CreateTravelPlanProps) {
+export function CreateTravelPlanForm({ onSave = () => { } }: CreateTravelPlanProps) {
 
     const [destinationsList, setDestinationsList] = useState<IMultiSelectItem[]>([])
     const [destinations, setDestinations] = useState<string[]>([])
-    const [friendsList, setFriendsList] = useState<string[]>(['Jarvis', 'Ultron', 'Some ither'])
+    const [friendsList, setFriendsList] = useState<SelectItemProps[]>([])
     const [friends, setFriends] = useState<string[]>([])
-    const [friendSearch, onFriendSearchChange] = useState('')
     const [isPrivate, setIsPrivate] = useState<boolean>(false);
     const [travelGroupName, setTravelGroupName] = useState<string>('');
     const [summary, setSummary] = useState<string>('');
@@ -45,12 +45,18 @@ export function CreateTravelPlanForm({onSave=()=>{}}: CreateTravelPlanProps) {
     const { userProfile } = useUserProfile()
     const [error, setError] = useState<string>('')
 
+
+    const [inviteMembers, setInviteMembers] = useState<string[]>([])
+
     useEffect(() => {
 
         async function fetchData() {
-            const _users = await getAllUserProfiles();
+            const _users = await getFollowers();
             const destinations = await getDestinations();
-            setFriendsList(_users.map(doc => `${doc.firstname} ${doc.lastname}`))
+            setFriendsList(_users.map(doc => ({
+                label: `${doc.firstname} ${doc.lastname}`,
+                value: doc.id
+            })))
             setDestinationsList(destinations.map(d => {
                 return {
                     label: `${d.name} - ${d.country}`,
@@ -76,11 +82,11 @@ export function CreateTravelPlanForm({onSave=()=>{}}: CreateTravelPlanProps) {
     const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
 
     async function getFriendProfiles(friendnames: string[]) {
-        const friendProfilePromise: Promise<UserProfile>[] = []
+        const friendProfilePromise: Promise<ShortProfile>[] = []
 
         friendnames.forEach(async (fr) => {
             const [firstname, lastname] = fr.split(' ')
-            friendProfilePromise.push(getUserProfileWithName(firstname, lastname))
+            friendProfilePromise.push(getShortProfile(fr))
         })
         return Promise.all(friendProfilePromise)
     }
@@ -88,7 +94,6 @@ export function CreateTravelPlanForm({onSave=()=>{}}: CreateTravelPlanProps) {
     function _getDestinations(destinationNames: string[]) {
         const dlist: Destination[] = []
         destinationNames.forEach((d) => {
-            console.log(d, [...d.split(' - ')])
             const idx = destinationsList.findIndex(v => v.object.name === d.split(' - ')[0])
             if (idx > -1)
                 dlist.push(destinationsList[idx].object)
@@ -98,25 +103,28 @@ export function CreateTravelPlanForm({onSave=()=>{}}: CreateTravelPlanProps) {
 
     async function handleCreateTravelPlan() {
         try {
-            setLoading(true)
-            const friendProfiles: UserProfile[] = await getFriendProfiles(friends)
-            const destinationObjects: Destination[] = _getDestinations(destinations)
 
+            if (!userProfile) return
+            setLoading(true)
+            const friendProfiles: ShortProfile[] = await getFriendProfiles(friends)
+            const destinationObjects: Destination[] = _getDestinations(destinations)
 
             const travelGroup: TravelGroup = {
                 id: uuid(),
                 name: travelGroupName,
-                createdBy: userProfile,
-                members: [],
+                createdBy: getShortProfileFromUserProfile(userProfile),
+                members: [
+                    getShortProfileFromUserProfile(userProfile)
+                ],
                 type: 'travel-group'
             }
             const travelPlan: TravelPlan = {
                 id: uuid(),
-                createdBy: userProfile,
+                createdBy: userProfile.id,
                 destinations: destinationObjects,
                 group: travelGroup,
                 isPrivate,
-                inviteMembers:friendProfiles,
+                inviteMembers,
                 travellingDateRange: {
                     start: dates[0]?.getTime() || 0,
                     end: dates[1]?.getTime() || 0,
@@ -166,11 +174,11 @@ export function CreateTravelPlanForm({onSave=()=>{}}: CreateTravelPlanProps) {
                         />
                         <Switch
                             onLabel={<IconEyeOff size="1rem" stroke={2.5} />}
-                            offLabel={<IconWorld size="1rem" stroke={2.5} />} 
-                            label={`Make this travel plan ${isPrivate?'public':'private'}`}
+                            offLabel={<IconWorld size="1rem" stroke={2.5} />}
+                            label={`Make this travel plan ${isPrivate ? 'public' : 'private'}`}
                             mt='md'
                             checked={isPrivate}
-                            onChange={()=>setIsPrivate(!isPrivate)}/>
+                            onChange={() => setIsPrivate(!isPrivate)} />
                     </form>
                     <div className="d-flex justify-content-between align-items-center mt-4">
                         <Button variant='outline' leftIcon={<IconArrowLeft size='1rem' />} onClick={prevStep}>Back</Button>
@@ -190,26 +198,17 @@ export function CreateTravelPlanForm({onSave=()=>{}}: CreateTravelPlanProps) {
                     </div>
                     <form >
                         <TextInput
-                            label="Name of your group (optional)"
+                            label="Name of your group"
                             placeholder="Eg: Rockstar travellers"
                             value={travelGroupName}
                             onChange={e => setTravelGroupName(e.target.value)}
                         />
-                        <MultiSelect
-                            data={friendsList}
-                            value={friends}
-                            mt='sm'
-                            label="Group Members"
-                            placeholder="Start typing to search for members..."
-                            searchable
-                            limit={10}
-                            nothingFound="No such user found"
-                            onChange={setFriends} />
+                        <FollowersSelect onChange={setInviteMembers} />
 
                     </form>
                     <div className="d-flex justify-content-between align-items-center mt-4">
-                        <Button variant='outline' color='grey' onClick={nextStep}>Skip</Button>
-                        <Button rightIcon={<IconArrowRight size='1rem' />} variant='outline' onClick={nextStep} disabled={friends.length === 0}>Next</Button>
+                        <Button variant='outline' leftIcon={<IconArrowLeft size='1rem' />} onClick={prevStep}>Back</Button>
+                        <Button rightIcon={<IconArrowRight size='1rem' />} variant='outline' onClick={nextStep} disabled={travelGroupName.length === 0}>Next</Button>
                     </div>
                 </Stepper.Step>
                 <Stepper.Step
@@ -227,8 +226,8 @@ export function CreateTravelPlanForm({onSave=()=>{}}: CreateTravelPlanProps) {
                         <DatePicker type="range" value={dates} onChange={setDates} />
                     </Group>
                     <div className="d-flex justify-content-between align-items-center mt-4">
-                        <Button variant='outline' color='grey' onClick={nextStep}>Skip</Button>
-                        <Button rightIcon={<IconArrowRight size='1rem' />} variant='outline' onClick={nextStep} disabled={friends.length === 0}>Next</Button>
+                    <Button variant='outline' leftIcon={<IconArrowLeft size='1rem' />} onClick={prevStep}>Back</Button>
+                        <Button rightIcon={<IconArrowRight size='1rem' />} variant='outline' onClick={nextStep} disabled={dates[0] === null || dates[1] === null}>Next</Button>
                     </div>
 
                 </Stepper.Step>
@@ -251,7 +250,7 @@ export function CreateTravelPlanForm({onSave=()=>{}}: CreateTravelPlanProps) {
                     />
 
                     <div className="d-flex justify-content-center align-items-center mt-4">
-                        <Button rightIcon={<IconSend size='1rem' />} variant='filled' onClick={handleCreateTravelPlan} disabled={friends.length === 0}>Create Travel Plan</Button>
+                        <Button rightIcon={<IconSend size='1rem' />} variant='filled' onClick={handleCreateTravelPlan} disabled={!summary}>Add Travel Plan</Button>
                     </div>
                 </Stepper.Step>
 

@@ -1,40 +1,53 @@
+/* eslint-disable react/display-name */
 import LikeButton from '@components/LikeButton/LikeButton'
 import LikesBanner from '@components/LikesBanner/LikesBanner'
+import InterestedMembersList from '@components/interestedMembersList/InterestedMembersList'
 import { Carousel } from '@mantine/carousel'
-import { ActionIcon, Avatar, Button, Divider, Image, Menu, Skeleton, Text, Textarea, ThemeIcon, UnstyledButton } from '@mantine/core'
-import { AvatarGroup } from '@mantine/core/lib/Avatar/AvatarGroup/AvatarGroup'
-import { IconCar, IconDotsVertical, IconMenu, IconMenu2, IconPlus, IconSend, IconTrash } from '@tabler/icons'
+import { ActionIcon, Avatar, Button, Divider, Image, LoadingOverlay, Menu, Skeleton, Text, Textarea, ThemeIcon, UnstyledButton } from '@mantine/core'
+import { IconCar, IconDotsVertical, IconSend, IconTrash, IconUsers } from '@tabler/icons'
 import { getFormattedDate } from 'Utils/dateutils'
-import { addComment, getComments, getCommentsCount } from 'data/api/post'
+import { capitalizeFirstLetter } from 'Utils/stringutils'
+import { addComment, checkRequestedToJoin, deletePost, getComments, getCommentsCount, joinTravelPlan } from 'data/api/post'
 import { getShortProfile } from 'data/api/profile'
 import { useAppContext } from 'data/context/app-context'
+import { useModal } from 'data/context/modal-context'
 import { useUserProfile } from 'data/hooks/useUserProfile'
 import { Like, Post, ShortProfile, UserComment } from 'data/models/user'
-import { useEffect, useState } from 'react'
-import { Tex } from 'tabler-icons-react'
+import { getAuth } from 'firebase/auth'
+import { memo, useEffect, useMemo, useState } from 'react'
 
 export interface IPostItemProps {
     post: Post,
-    showEditMenu?: boolean
+    showEditMenu?: boolean,
+    ondeleteClick?: () => any
 }
 
-const PostItem = ({ post, showEditMenu = false }: IPostItemProps) => {
+const PostItem = ({ post, showEditMenu = false, ondeleteClick = () => { } }: IPostItemProps) => {
 
     const { userProfile } = useUserProfile();
     const [currentPost, setCurrenPost] = useState<Post>(post);
 
     const [loading, setLoading] = useState<boolean>(false);
     const [owner, setOwner] = useState<ShortProfile>()
+
+    const [loadingJoin, setLoadingJoin] = useState<boolean>(false)
+    const [joined, setJoined] = useState<boolean>(false);
+    const [requestedJoin, setRequestedJoin] = useState<boolean>(false)
+
+    const { openModal } = useModal()
+
     const { setError } = useAppContext();
 
     useEffect(() => {
         fetchData()
+
     }, [])
 
     async function fetchData() {
         try {
             setLoading(true)
             setOwner(await getShortProfile(post.ownerId))
+            setRequestedJoin(await checkRequestedToJoin(post.id))
         } catch (error) {
             setError(error as Error)
         } finally {
@@ -61,10 +74,36 @@ const PostItem = ({ post, showEditMenu = false }: IPostItemProps) => {
             })
     }
 
+    async function handleJoinClick() {
+        try {
+            setLoadingJoin(true)
+            await joinTravelPlan(post.id)
+            setJoined(true)
+        } catch (error) {
+            setError(error as Error)
+        } finally {
+            setLoadingJoin(false)
+        }
+    }
+
+    function handleOnInterestedMembersJoinClick() {
+        openModal({
+            title: 'Interested Members',
+            content: <InterestedMembersList />
+        })
+    }
+
+    if (loading) {
+        <div className="card p-4 rounded-4 mb-3">
+            <LoadingOverlay visible />
+        </div>
+    }
+
     return (
         <div className="card p-0 rounded-4 mb-3">
             <div className="d-flex p-2">
-                <PostHeader ownerId={currentPost.ownerId} showEditMenu={showEditMenu} />
+                <PostHeader ownerId={currentPost.ownerId} showEditMenu={showEditMenu} onDeleteClick={ondeleteClick} showInterestUsersList={!!currentPost.travelPlan}
+                    onInterestedMembersClick={handleOnInterestedMembersJoinClick} />
             </div>
             <Divider />
 
@@ -97,20 +136,25 @@ const PostItem = ({ post, showEditMenu = false }: IPostItemProps) => {
                             </ThemeIcon>
                             <div className='ms-2 lh-1'>
                                 <strong className='text-capitalize m-0 p-0 fw-bold h6 text-muted'>{currentPost.travelPlan.group.name}</strong>
-                                <small className="text-muted m-0 p-0">  (created by {currentPost.travelPlan.createdBy?.firstname})</small><br />
+                                <small className="text-muted m-0 p-0">  ({currentPost.travelPlan.isPrivate ? 'Private' : 'Public'})</small><br />
                                 <small className="text-muted">Destinations: {currentPost.travelPlan.destinations.map(d => d.name).join(', ')}</small><br />
                                 <small className="text-muted">Dates: {getFormattedDate(currentPost.travelPlan.travellingDateRange.start)} - {getFormattedDate(currentPost.travelPlan.travellingDateRange.end)}</small>
+                                {
+                                    currentPost.travelPlan.group &&
+                                    <Avatar.Group spacing="xs" mr={7}>
+                                        {
+                                            currentPost.travelPlan.group.members.map(pr => <Avatar key={pr.id} src={pr.avatar} radius="xl" size='sm' />)
+                                        }
+                                    </Avatar.Group>
+                                }
                             </div>
-                            {
-                                currentPost.travelPlan.group &&
-                                <Avatar.Group spacing="xs" mr={7}>
-                                    {
-                                        currentPost.travelPlan.group.members.map(pr => <Avatar key={pr.id} src={pr.avatar} radius="xl" size='sm' />)
-                                    }
-                                </Avatar.Group>
-                            }
+
                         </div>
-                        <Button radius='xl' compact >Join {currentPost.travelPlan.createdBy?.firstname}</Button>
+                        {
+                            userProfile && (currentPost.travelPlan.inviteMembers.includes(userProfile.id) ?
+                                <Button radius='xl' compact disabled>{owner && capitalizeFirstLetter(owner?.firstname)} invited you</Button> :
+                                <Button radius='xl' compact onClick={handleJoinClick} disabled={joined || (currentPost.travelPlan.interestedMembers?.includes(userProfile.id)) || requestedJoin} loading={loadingJoin} >{joined || (currentPost.travelPlan.interestedMembers?.includes(userProfile.id) || requestedJoin) ? `Requested` : `Join ${owner?.firstname}`}</Button>)
+                        }
                     </div>
                 </div>
             }
@@ -154,15 +198,21 @@ const PostItem = ({ post, showEditMenu = false }: IPostItemProps) => {
 
 interface HeaderProps {
     ownerId: string,
-    showEditMenu: boolean
+    showEditMenu: boolean,
+    showInterestUsersList: boolean,
+    onInterestedMembersClick: () => any,
+    onDeleteClick?: () => any
 }
-function PostHeader({ ownerId, showEditMenu }: HeaderProps) {
+function PostHeader({ ownerId, showEditMenu, onDeleteClick, showInterestUsersList = false, onInterestedMembersClick = () => { } }: HeaderProps) {
     const [loading, setLoading] = useState<boolean>(true)
     const [owner, setOwner] = useState<ShortProfile>()
 
     useEffect(() => {
         fetchData()
     }, [ownerId])
+
+
+
 
     const fetchData = async () => {
         setLoading(true)
@@ -186,18 +236,29 @@ function PostHeader({ ownerId, showEditMenu }: HeaderProps) {
             </div>
         </div>
         {
-            showEditMenu &&
+
             <Menu shadow="md"  >
                 <Menu.Target>
                     <ActionIcon radius='xl'>
                         <IconDotsVertical size={18} />
                     </ActionIcon>
                 </Menu.Target>
+
+
                 <Menu.Dropdown>
-                    <Menu.Item icon={<IconTrash size={18} />} color='red'>
-                        Delete this post
-                    </Menu.Item>
+                    {(ownerId === getAuth().currentUser?.uid) &&
+                        <>
+
+                            {showInterestUsersList && <Menu.Item icon={<IconUsers size={18} />} onClick={onInterestedMembersClick}>
+                                View all interested users
+                            </Menu.Item>}
+                            <Menu.Item icon={<IconTrash size={18} />} color='red' onClick={onDeleteClick}>
+                                Delete this post
+                            </Menu.Item>
+                        </>
+                    }
                 </Menu.Dropdown>
+
             </Menu>
         }
     </div>
@@ -272,7 +333,7 @@ const CommentComponent = ({ post }: CommentComponentProps) => {
 
         }
         {
-
+            openAddComment &&
             <>
                 <div className="d-flex mb-2">
                     <Avatar src={userProfile?.avatar} size='sm' mr='sm' radius='xl' />
@@ -324,4 +385,4 @@ const CommentItem = ({ comment }: CommentItemProps) => {
     )
 }
 
-export default PostItem
+export default memo(({ post }: IPostItemProps) => <PostItem post={post} />)

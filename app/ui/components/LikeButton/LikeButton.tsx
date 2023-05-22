@@ -22,7 +22,6 @@ const LikeButton = ({ post,onLikeAdded=()=>{},onLikeRemoved=()=>{} }: LikeButton
     useEffect(()=>{
        
         if(post.likeIndex && userProfile){
-            console.log('likeindex',post.likeIndex)
             setLiked(post.likeIndex.findIndex(id=>id===userProfile.id)>-1)
         }
     },[post])

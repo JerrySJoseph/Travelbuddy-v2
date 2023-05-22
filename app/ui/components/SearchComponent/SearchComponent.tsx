@@ -59,7 +59,7 @@ const SearchComponent = () => {
         ({ description, type, image, title, value, label, ...others }: ItemProps, ref) => {
             return <div ref={ref} {...others}>
                 <Group noWrap>
-                    <Avatar src={image} />
+                    <Avatar src={image} radius='xl'/>
                     <div>
                         <Text className='text-capitalize' m={0}>{label}</Text>
                         <Text size="xs" color="dimmed">

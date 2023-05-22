@@ -1,11 +1,9 @@
 import { Like, Media, Post, PostRaw, ShortProfile, UserComment } from "data/models/user";
 import { getAuth } from "firebase/auth";
-import { getDatabase, remove, set, serverTimestamp as db_timestamp, DataSnapshot } from "firebase/database";
-import { DocumentSnapshot, arrayRemove, arrayUnion, collection, deleteDoc, doc, getCountFromServer, getDocs, getFirestore, increment, limit, orderBy, query, serverTimestamp, setDoc, startAfter, updateDoc, where } from "firebase/firestore";
-import { UploadTaskSnapshot, getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
-import { ref as rtdbRef } from "firebase/database";
+import { serverTimestamp as db_timestamp, get, getDatabase, remove, ref as rtdbRef, set, update } from "firebase/database";
+import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getCountFromServer, getDoc, getDocs, getFirestore, increment, limit, or, orderBy, query, serverTimestamp, setDoc, startAfter, updateDoc, where } from "firebase/firestore";
+import { UploadTaskSnapshot, deleteObject, getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import { v4 as uuid } from 'uuid';
-import { getShortProfile } from "./profile";
 
 const POST_COLLECTION = 'posts'
 
@@ -115,7 +113,7 @@ export async function likePost(postId: string) {
         updateDoc(doc(getFirestore(), POST_COLLECTION, postId), {
             likeCount: increment(1),
             likeIndex: arrayUnion(_userid)
-        })
+        }),
     ])
     return { ...newLike, datetime: Date.now() };
 }
@@ -141,7 +139,7 @@ export async function removeLike(postId: string) {
     ])
 }
 
-export async function getFeeds() {
+export async function getFeeds(lastPost?: Post, max_result: number = 20) {
     const _userid = getAuth().currentUser?.uid
 
     if (!_userid)
@@ -151,18 +149,37 @@ export async function getFeeds() {
     const followingsSnapshot = await getDocs(collection(firestore, 'profiles', _userid, 'following'))
     const followings = followingsSnapshot.docs.map(doc => (doc.data() as ShortProfile).id)
     followings.push(_userid)
-    console.log('following', followings)
-    const postsSnapshot = await getDocs(
-        query(collection(firestore, 'posts'),
-            where('ownerId', 'in', followings),
-            orderBy('datetime', 'desc'))
-    )
 
+    let feedQuery = query(collection(firestore, 'posts'),
+        or(where('ownerId', 'in', followings),
+            where('travelPlan.isPrivate', '==', false)
+        ),
+        limit(max_result),
+        orderBy('datetime', 'desc'))
+
+    const postsSnapshot = await getDocs(feedQuery)
     return postsSnapshot.docs.map(doc => doc.data() as Post)
 
 }
 
-export async function getCommentsCount(postId:string){
+export async function getFeedsCount() {
+    const _userid = getAuth().currentUser?.uid
+
+    if (!_userid)
+        throw new Error('No user logged in')
+
+    const firestore = getFirestore()
+    const followingsSnapshot = await getDocs(collection(firestore, 'profiles', _userid, 'following'))
+    const followings = followingsSnapshot.docs.map(doc => (doc.data() as ShortProfile).id)
+    followings.push(_userid)
+
+    let feedQuery = query(collection(firestore, 'posts'),
+        where('ownerId', 'in', followings))
+
+    return (await getCountFromServer(feedQuery)).data().count
+}
+
+export async function getCommentsCount(postId: string) {
     const _userid = getAuth().currentUser?.uid
 
     if (!_userid)
@@ -171,10 +188,10 @@ export async function getCommentsCount(postId:string){
     if (!postId)
         throw new Error('No post id given for comments count');
 
-    return (await getCountFromServer(collection(getFirestore(),'posts',postId,'comments'))).data().count
+    return (await getCountFromServer(collection(getFirestore(), 'posts', postId, 'comments'))).data().count
 }
 
-export async function getComments(postId: string,lastComment:UserComment,max_results:number=1) {
+export async function getComments(postId: string, lastComment: UserComment, max_results: number = 1) {
     const _userid = getAuth().currentUser?.uid
 
     if (!_userid)
@@ -185,19 +202,19 @@ export async function getComments(postId: string,lastComment:UserComment,max_res
 
     const firestore = getFirestore()
     const followers: UserComment[] = []
-    const commentQuery=
-    lastComment?
-    query(
-        collection(firestore, `posts/${postId}/comments`),
-        limit(max_results),
-        orderBy('datetime','desc'),
-        startAfter(lastComment.datetime)
-    )
-    :query(
-        collection(firestore, `posts/${postId}/comments`),
-        limit(max_results),
-        orderBy('datetime','desc'),
-    )
+    const commentQuery =
+        lastComment ?
+            query(
+                collection(firestore, `posts/${postId}/comments`),
+                limit(max_results),
+                orderBy('datetime', 'desc'),
+                startAfter(lastComment.datetime)
+            )
+            : query(
+                collection(firestore, `posts/${postId}/comments`),
+                limit(max_results),
+                orderBy('datetime', 'desc'),
+            )
     const querySnapshot = await getDocs(commentQuery)
     querySnapshot.forEach(doc => {
         followers.push(doc.data() as UserComment)
@@ -225,4 +242,57 @@ export async function addComment(postId: string, content: string): Promise<UserC
     }
     await setDoc(commentsRef, commentObject)
     return { ...commentObject, datetime: Date.now() };
+}
+
+
+export async function joinTravelPlan(postId: string) {
+    const _userid = getAuth().currentUser?.uid
+
+    if (!_userid)
+        throw new Error('No user logged in')
+
+    if (!postId)
+        throw new Error('No post id given for travel plan');
+    const docRef = doc(getFirestore(), 'posts', postId);
+    await updateDoc(docRef, {
+        interestedMembers: arrayUnion(_userid)
+    })
+
+    let obj: {
+        [key: string]: any
+    } = {}
+    obj[_userid] = true
+    await update(rtdbRef(getDatabase(), 'travel-plan-interests/' + postId + '/'), obj)
+    return true;
+}
+
+export async function checkRequestedToJoin(postId: string) {
+    const _userid = getAuth().currentUser?.uid
+
+    if (!_userid)
+        throw new Error('No user logged in')
+    if (!postId)
+        throw new Error('No post id given for travel plan');
+
+    return (await get(rtdbRef(getDatabase(),'travel-plan-interests/' + postId + '/'+_userid))).exists()
+}
+
+export async function deletePost(postId: string) {
+    const _userid = getAuth().currentUser?.uid
+
+    if (!_userid)
+        throw new Error('No user logged in')
+
+    if (!postId)
+        throw new Error('No post id given for post');
+    const docRef = doc(getFirestore(), 'posts', postId);
+    const post = (await getDoc(docRef)).data() as Post
+    const mediaRefs = post.medias?.map(media => ref(getStorage(), media.mediaUrl)) || []
+    await Promise.all([
+        deleteDoc(docRef),
+        ...mediaRefs.map(imgRef => deleteObject(imgRef))
+
+    ])
+
+    return true;
 }

@@ -1,5 +1,6 @@
-import { Avatar, Button, CloseButton, FileButton, Image, Text, Textarea, ThemeIcon } from '@mantine/core'
+import { ActionIcon, Avatar, Button, CloseButton, FileButton, Image, Text, Textarea, ThemeIcon } from '@mantine/core'
 import { IconCamera, IconCar, IconCaravan, IconLink, IconSend, IconTrash } from '@tabler/icons'
+import { getFormattedDate } from 'Utils/dateutils'
 import { addPost } from 'data/api/post'
 import { useAppContext } from 'data/context/app-context'
 import { useModal } from 'data/context/modal-context'
@@ -18,20 +19,20 @@ const NewPostComponent = ({ ...props }) => {
     const [travelPlan, setTravelPlan] = useState<TravelPlan>()
     const [loading, setLoading] = useState<boolean>(false)
     const { setSuccess } = useAppContext()
-    const { openModal ,closeModal} = useModal()
+    const { openModal, closeModal } = useModal()
 
 
-    function resetFields(){
+    function resetFields() {
         setText(''),
-        setImageFiles([]),
-        setTravelPlan(undefined)
+            setImageFiles([]),
+            setTravelPlan(undefined)
     }
 
 
     function handleAddTravelPlan() {
         openModal({
             title: 'Add travel Plan to your Post',
-            content: <CreateTravelPlanForm onSave={tp=>{
+            content: <CreateTravelPlanForm onSave={tp => {
                 setTravelPlan(tp)
                 closeModal()
             }} />,
@@ -45,7 +46,7 @@ const NewPostComponent = ({ ...props }) => {
         await addPost({
             images: imageFiles,
             text,
-            travelPlan
+            travelPlan: travelPlan || null
         })
         setSuccess('Your new post has been added to your timeline')
         setLoading(false)
@@ -90,21 +91,22 @@ const NewPostComponent = ({ ...props }) => {
         if (!travelPlan)
             return <></>
         return (
-            <div>
-                <Text color='dimmed'><IconCar size={18} /> Travel plans</Text>
-                <div className="card p-4">
-                    <div className="d-flex justify-content-between align-items-center">
-                        <div className="d-flex align-items-center">
-                            <ThemeIcon>
-                                <IconCar size={20} />
-                            </ThemeIcon>
-                            <div>
-                                <Text>{travelPlan.group.name}</Text>
-                                <Text>{travelPlan.destinations.map(d => d.name).join(',')}</Text>
-                            </div>
+            <div className="card p-2">
+                <div className="d-flex align-items-center justify-content-between">
+                    <div className="d-flex align-items-center">
+                        <ThemeIcon>
+                            <IconCar size={18} />
+                        </ThemeIcon>
+                        <div className='ms-2 lh-1'>
+                            <strong className='text-capitalize m-0 p-0 fw-bold h6 text-muted'>{travelPlan.group.name}</strong>
+                            <small className="text-muted m-0 p-0">  (created by {userProfile?.firstname})</small><br />
+                            <small className="text-muted">Destinations: {travelPlan.destinations.map(d => d.name).join(', ')}</small><br />
+                            <small className="text-muted">Dates: {getFormattedDate(travelPlan.travellingDateRange.start)} - {getFormattedDate(travelPlan.travellingDateRange.end)}</small><br />
+                            <small className="text-muted m-0 p-0">{travelPlan.inviteMembers.length} invited</small><br />
                         </div>
-                        <CloseButton color='red' radius='xl' variant='filled' onClick={()=>setTravelPlan(undefined)}/>
+                        
                     </div>
+                    <CloseButton />
                 </div>
             </div>
         )
@@ -122,10 +124,16 @@ const NewPostComponent = ({ ...props }) => {
                         </div>
                     </div>
                     <ImageList files={imageFiles} />
-                    <TravelPlanItem />
+                    {
+                        travelPlan &&
+                        <div className="col-12">
+                            <Text color='dimmed' my='sm'><IconCar size={18} /> Travel Plans</Text>
+                            <TravelPlanItem />
+                        </div>
+                    }
                     <div className="col-12">
-                        <div className="col-12 mb-2">
-                            <Text color='dimmed'><IconLink size={18} /> Add more to your post</Text>
+                        <div className="col-12">
+                            <Text color='dimmed' my='sm'><IconLink size={18} /> Add more to your post</Text>
                         </div>
                         <FileButton onChange={fs => setImageFiles([...imageFiles, ...fs])} accept="image/*" multiple>
                             {(props) => <Button {...props} variant='light' leftIcon={<IconCamera size={18} />} radius='xl'>Add Image</Button>}

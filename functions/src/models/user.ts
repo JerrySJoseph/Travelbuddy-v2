@@ -117,10 +117,10 @@ export interface TravelGroupOverride{
 export interface TravelPlan{
     type:'travel-plan',
     id:string,
-    createdBy?:UserProfile
+    createdBy?:string
     destinations:Destination[]
     group:TravelGroup,
-    inviteMembers:UserProfile[]
+    inviteMembers:string[]
     isPrivate:Boolean,
     travellingDateRange:{
         start:number,
@@ -159,10 +159,10 @@ export interface Notification{
 export interface TravelPlanInvite{
     type:'travel-plan-invite',
     id:string,
-    ownerId:string,
-    travelPlanId:TravelPlan,
+    owner:UserProfile,
+    travelPlan:TravelPlan,
     datetime:any,
-    recipientId:UserProfile,
+    recipient:UserProfile,
     status:'PENDING'|'ACCEPTED'|'REJECTED'
 }
 
@@ -190,7 +190,7 @@ export interface Post{
     text?:string,
     ownerId:string,
     medias?:Media[],
-    travelPlan?:TravelPlan
+    travelPlan?:TravelPlan|null
     datetime:any,
     likes?:Like[],
     likeIndex:string[],
@@ -209,7 +209,7 @@ export interface UserComment{
 export interface PostRaw{
     text?:string,
     images?:File[],
-    travelPlan?:TravelPlan
+    travelPlan?:TravelPlan|null
 }
 
 export function getShortProfileFromUserProfile(profile:UserProfileOverride):ShortProfile{

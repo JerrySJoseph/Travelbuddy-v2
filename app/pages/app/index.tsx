@@ -12,21 +12,8 @@ import Feeds from 'ui/components/Feeds/Feeds';
 
 const Dashboard = () => {
 
-  const [posts, setPosts] = useState<Post[]>([])
   const {userProfile}=useUserProfile()
-
-  useEffect(() => {
-    fetchPosts()
-  }, [])
-
-  useEffect(() => {
-    console.log(posts)
-  }, [posts])
-
-  async function fetchPosts() {
-    setPosts(await getFeeds())
-  }
-
+  
   return (
     <Applayout>
       <div className="row">
