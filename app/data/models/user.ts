@@ -214,6 +214,21 @@ export interface PostRaw{
     travelPlan?:TravelPlan|null
 }
 
+export interface MessageGroup{
+    id:string,
+    owner:ShortProfile
+    members:ShortProfile[],
+    memberIds:string[]
+    messages:Message[]
+}
+
+export interface Message{
+    id:string,
+    owner:ShortProfile,
+    content:string,
+    datetime:any
+}
+
 export function getShortProfileFromUserProfile(profile:UserProfileOverride):ShortProfile{
     return {
         type:'short-profile',

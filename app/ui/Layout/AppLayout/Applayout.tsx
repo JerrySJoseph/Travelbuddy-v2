@@ -3,6 +3,7 @@ import { ReactNode } from 'react'
 import TopNavbar from '../../components/TopNavBar/TopNavbar'
 import { createStyles } from '@mantine/core'
 import login_hero from '../../../public/img/login_hero.svg'
+import MessageGroup from '@components/MessageGroup/MessageGroup'
 
 interface AppLayoutProps {
     children?: ReactNode
@@ -35,12 +36,14 @@ const useStyles = createStyles((theme) => ({
 
 const Applayout = ({ isFluid=false, children, ...props }: AppLayoutProps) => {
 
+    const {messageOpen,toggleMessage}=useAppContext();
     return (
         <>
             <TopNavbar isFluid={isFluid}/>
             <main className={`container${isFluid ? '-fluid':''} pt-4 background`} {...props}>               
                 
                 {children}
+                <MessageGroup opened={messageOpen} toggleOpen={toggleMessage}/>
             </main>
         </>
     )
