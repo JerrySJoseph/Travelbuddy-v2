@@ -75,9 +75,7 @@ export function LoginForm(props: PaperProps) {
             {`Don't have an account yet? Create one.`}
           </Text>
         </Link>
-        <div className="col-lg-12">
-          <Button leftIcon={<IconLock size='18' />} className='w-100' onClick={createDummyUsers}>Create Dummy Users</Button>
-        </div>
+       
       </form>
 
     </div>
