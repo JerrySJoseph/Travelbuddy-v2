@@ -27,17 +27,20 @@ export const addPost = async (post: PostRaw, progressCallback: UploadProgressCal
 
         const postId = uuid()
 
-        // const ownerShortProfile = await getShortProfile(user.uid)
+         const ownerShortProfile = await getShortProfile(user.uid)
         let postObject: Post = {
             id: postId,
             ownerId: user.uid,
-            // owner: ownerShortProfile,
+             owner: ownerShortProfile,
             datetime: serverTimestamp(),
             text: post.text,
             likeIndex: [],
             likeCount: 0,
             travelPlan: post.travelPlan
         }
+
+        if(postObject.travelPlan)
+            postObject.travelPlan.owner=ownerShortProfile
 
         const firestore = getFirestore();
         const docRef = doc(firestore, POST_COLLECTION, postId)
@@ -261,11 +264,8 @@ export async function joinTravelPlan(postId: string) {
         interestedMembers: arrayUnion(_userid)
     })
 
-    let obj: {
-        [key: string]: any
-    } = {}
-    obj[_userid] = true
-    await update(rtdbRef(getDatabase(), 'travel-plan-interests/' + postId + '/'), obj)
+    
+    await update(rtdbRef(getDatabase(), 'travel-plan-interests/' + postId + '/'+_userid), await getShortProfile(_userid))
     return true;
 }
 
@@ -354,17 +354,28 @@ export const acceptTravelPlanInvite = async (travelPlanInvite: TravelPlanInvite)
 export const rejectTravelPlanInvite = async (travelPlanInvite: TravelPlanInvite) => {
 
     try {
-        
+
         const user = getAuth().currentUser
         if (!user) return false
-        const functions = getFunctions(app)
-        const acceptOrRejectTravelPlanFn = httpsCallable(functions, 'acceptOrRejectTravelPlan');
-        travelPlanInvite.status='REJECTED'
-        const result = await acceptOrRejectTravelPlanFn({ travelPlanInvite })
-        return true
+        const database=getDatabase();     
+       
+        const promises=[
+            remove(rtdbRef(database,`travel-plan-invites/${user.uid}/${travelPlanInvite.id}`)),
+            
+        ]
+        await Promise.all(promises)
     } catch (error) {
         console.log('API ERROR', error)
         throw error
     }
 
+}
+
+export async function addToGroup(postId:string,user:ShortProfile){
+    return (await Promise.all([
+        updateDoc(doc(getFirestore(),'posts',postId),{
+            'travelPlan.group.members':arrayUnion(user)
+        }),
+        remove(rtdbRef(getDatabase(),'travel-plan-interests/' + postId + '/' + user.id))
+    ]))
 }
