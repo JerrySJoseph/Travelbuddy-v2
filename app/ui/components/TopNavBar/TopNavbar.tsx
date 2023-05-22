@@ -10,6 +10,7 @@ import { useNotifications } from "data/hooks/useNotifications"
 import { FollowRequest } from "data/models/user"
 import { useRouter } from "next/router"
 import { useState } from "react"
+import Link from "next/link"
 
 
 export interface ITopNavBarProps {
@@ -24,7 +25,9 @@ const TopNavbar = ({ isFluid }: ITopNavBarProps) => {
         <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
             <div className={`container${isFluid ? '-fluid' : ''}`}>
                 <div className="col-lg-3">
-                    <Avatar src={'/img/panda.png'} size='md' radius='xl' />
+                    <Link href='/app' role="button">
+                    <Avatar src={'/img/panda.png'} size='md' radius='xl' role="button"/>
+                    </Link>
                 </div>
                 <div className="col-lg-6">
                     <SearchComponent />
