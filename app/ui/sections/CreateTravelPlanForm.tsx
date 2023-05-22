@@ -114,7 +114,7 @@ export function CreateTravelPlanForm({ onSave = () => { } }: CreateTravelPlanPro
                 name: travelGroupName,
                 createdBy: getShortProfileFromUserProfile(userProfile),
                 members: [
-                    getShortProfileFromUserProfile(userProfile)
+                    getShortProfileFromUserProfile(userProfile),
                 ],
                 type: 'travel-group'
             }
