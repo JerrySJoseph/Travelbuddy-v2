@@ -1,0 +1,5 @@
+insert into location (id, name, country) values (1, 'London', 'England');
+insert into location (id, name, country) values (2, 'Brighton', 'England');
+insert into location (id, name, country) values (3, 'Manchester', 'England');
+insert into location (id, name, country) values (4, 'Los Angeles', 'USA');
+insert into location (id, name, country) values (5, 'New York', 'USA');

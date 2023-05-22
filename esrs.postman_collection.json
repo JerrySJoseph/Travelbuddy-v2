@@ -1,0 +1,116 @@
+{
+	"info": {
+		"_postman_id": "cac1e284-a052-4014-9124-6fc965b1af89",
+		"name": "esrs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23843026"
+	},
+	"item": [
+		{
+			"name": "All locations",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/location-service/all",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"location-service",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get by name",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/location-service/name?name=Brighton",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"location-service",
+						"name"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Brighton"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get by country",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/location-service/country?country=UK",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"location-service",
+						"country"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "UK"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Insert location",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Brighton\",\n    \"country\": \"UK\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8081/location-service/insert",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8081",
+					"path": [
+						"location-service",
+						"insert"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "localhost:8081"
+		}
+	]
+}

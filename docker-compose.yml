@@ -1,0 +1,79 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15.3
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: esrs-db
+    ports:
+      - "5432:5432"
+    networks:
+      - esrs-network
+    volumes:
+      - esrs_db_vol:/var/lib/postgresql/data
+
+  cache:
+    image: redis:7.0.11
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=root
+    volumes:
+      - esrs_cache_vol:/data
+    networks:
+      - esrs-network
+
+  discovery-service:
+    build: ./discovery-service
+    restart: always
+    ports:
+      - "8761:8761"
+    networks:
+      - esrs-network
+
+  gateway-service:
+    restart: always
+    build: ./gateway-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_APPLICATION_NAME: gateway-service
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
+    networks:
+      - esrs-network
+    depends_on:
+      - discovery-service
+
+  location-service:
+    restart: always
+    build: ./location-service
+    # should probably put all these in a secrets file or something
+    environment:
+      APPLICATION_NAME: location-service
+      EUREKA_SERVICEURL: http://discovery-service:8761/eureka/
+      DATASOURCE_URL: jdbc:postgresql://db:5432/esrs-db
+      DATASOURCE_USERNAME: root
+      DATASOURCE_PASSWORD: root
+      REDIS_HOST: cache
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: root
+    networks:
+      - esrs-network
+    depends_on:
+      - db
+      - cache
+      - discovery-service
+      - gateway-service
+
+volumes:
+  esrs_db_vol:
+    driver: local
+  esrs_cache_vol:
+    driver: local
+
+networks:
+  esrs-network:
+    driver: bridge
