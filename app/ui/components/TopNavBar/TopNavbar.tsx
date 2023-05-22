@@ -34,9 +34,7 @@ const TopNavbar = ({ isFluid }: ITopNavBarProps) => {
                 </div>
                 <div className="col-lg-3 d-flex justify-content-end">
                     <InvitationsMenu className='me-2' />
-                    <ActionIcon variant="subtle" className='me-2' onClick={toggleMessage} >
-                        <IconMessage size="1.2rem" />
-                    </ActionIcon>
+                    
                     <NotificationMenu className='me-4' />
                     <UserControlMenu />
                 </div>
