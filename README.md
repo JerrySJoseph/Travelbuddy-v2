@@ -44,18 +44,39 @@ Flexible data modeling: Firestore's NoSQL structure allows for flexible data mod
 Cost-effective: Firestore uses a pay-as-you-go pricing model, meaning we only pay for the resources we actually use. This model allows us to efficiently manage costs while still providing a robust, high-performance database solution.
 By choosing Firestore, the Travel Buddy team was able to build a scalable, real-time, and flexible database solution that can grow with our app and provide a seamless experience for users.
 
+##### Continuous Integration/Deployment
+1. We used Github Actions to automate the build and deploy source code on every push.
+2. Every push to any branch triggers a deployment in development mode at dev-url.
+3. Every push, merge or commit to the master branch triggers a production deployment.
+
+
 ### **Phase 3: Refining User Requirements and Features**
 
 During the development process, the Travel Buddy team took a step back to re-evaluate our initial user requirements and features. We realized that including payment and booking functionalities within the app would distract from our primary goal of connecting like-minded travelers and fostering a sense of community. With that in mind, we made the decision to remove these features and focus on enhancing the core travel companion experience.
+
 ##### Introducing the "Travel Plans" Feature
 To better align with our mission statement, we introduced the "Travel Plans" feature, a more social and interactive way for users to plan their trips and connect with others. This new feature enables users to create detailed itineraries for their upcoming journeys, specifying essential information such as destinations, dates, activities, and points of interest.
+
 ##### Collaborative Travel Planning
 Once a user has created a travel plan, they can invite other users to join, allowing for collaborative trip planning and itinerary building. Users can also search for existing travel plans based on their preferences - location, travel dates, activities etc., making it easy to find potential travel companions with similar interests.
+
 ##### User Profiles and Communication
 The update also allows users to find compatible travel companions more efficiently. In addition, we introduced an in-app messaging system, enabling users to communicate directly, discuss travel plans, and get to know each other before embarking on their adventure together.
+
 ##### Community-driven Exploration
 By focusing on the "Travel Plans" feature, we have transformed Travel Buddy into a more community-driven platform that encourages users to share their experiences and explore new destinations together. Users can now benefit from the collective knowledge and experiences of fellow travelers, making the planning process more enjoyable and enriching.
 With these changes in place, Travel Buddy is now better equipped to fulfill its mission of bringing travelers together, fostering connections, and creating unforgettable adventures.
+
+##### Database Design
+
+Collections used: Profiles, Short-Profiles, Posts, Comments
+
+Certain queries specifically for this app in Firestore are efficient and fast when indexed correctly. Therefore, models which will be used for read operations (potentially millions of requests) are indexed by multiple fields and stored in a firestore (improved query performance). Since Firestore bills on a per-query basis, we tried to minimize the use of the Firestore database as much as possible.
+
+NoSQL database: follow-invites, travel-plan-invites, relationships, notifications, like-index
+
+All the models, which are primarily used for quick lookups and more likely to change, are stored in a NoSQL database. Since NoSQL database charges for the amount of data returned (realtime database), using this as a primary database for more dynamic data makes sense economically. 
+
 
 ### **Phase 4: Frontend Development and Responsiveness**
 
@@ -64,6 +85,31 @@ Our frontend was built using Next.js, ensuring an intuitive, user-friendly inter
 ### **Phase 5: Security, Performance, and Availability**
 
 Ensuring a secure and reliable platform is paramount for our users' peace of mind. We implemented user authentication, data encryption for sensitive information, and regular security audits to protect our users' data. Additionally, we optimized the platform's performance for fast loading times and minimal downtime, and we prioritized 24/7 availability with regular backups in case of system failure.
+
+Scalability:
+
+1. We used Microservices to ensure scalability of our project (can spawn 1000s of AWS lambda simultaneously on peaks, concurrency is set to 5 to reduce hot start delays)
+2. NoSQL database (Highly scalable and reliable database architecture. Low data duplication required for our model)
+
+Performance:
+
+1. Uses ISR and SSG features of Next.js to render a dummy page before content hydration.
+2. Static files are served over AWS Cloudfront to reduce latency.
+3. Bundling javascript files to reduce the size of the javascript bundle and removing all unused code.
+4. Optimized database models and queries to reduce the number of database queries.
+	i. Advantages of our Database Model
+		a) Every user has a full and short profile. Short profiles are used for 
+		   instances where a full profile is not needed. For example, when a user 
+		   search for other users, followers list, posts, etc.
+		b) Relationships are created as subcollection inside a user profile which 
+		   helps in reducing the query time because of significantly less documents.
+		   (This is under the assumption, 90% of users will have followers below 
+		    10000, which our database servers can handle effortlessly)  
+	i. Limitations of our models
+		a) Since referencing a user in post, comments, likes etc. is done by 
+		   short-profile, updating every single instance on those short profile in any 
+		   circumstance is write heavy. Possibly, 1000s of documents needs to be 
+		   updated
 
 ### **Conclusion**
 
